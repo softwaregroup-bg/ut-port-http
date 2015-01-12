@@ -5,6 +5,7 @@
     var util = require('util');
     var fs = require('fs');
     var when = require('when');
+    var request = require('superagent');
 
     function HttpPort() {
         Port.call(this);
@@ -13,10 +14,11 @@
             logLevel: '',
             type: 'http',
             host: '127.0.0.1',
-            port: '81',
+            port: '',
             listen: false,
-            method: 'POST',
+            method: 'get',
             path: '/',
+            userAgent: 'ut5-HttpPort',
             headers: {},
             auth: {},
             secure: false,
@@ -27,9 +29,9 @@
         };
         this.http = null;
         this.httpServer = null;
-        this.key = null;
-        this.cert = null;
-        this.pfx = null;
+        this.key = '';
+        this.cert = '';
+        this.pfx = '';
     }
 
     util.inherits(HttpPort, Port);
@@ -49,7 +51,9 @@
                 this.pfx = fs.readFileSync(this.config.SSLRootCertFile);
             }
         } else {
-            this.http = require('http');
+            if (this.config.listen) {
+                this.http = require('https');
+            }
         }
     };
 
@@ -85,56 +89,65 @@
     };
 
     HttpPort.prototype.execRequest = function execRequest(msg) {
+        var method = msg.HTTPMethod || this.config.method;
+        var hostname = msg.URL || this.config.host;
+        var req = request(method == 'get' ? 'GET' : 'POST', hostname);
 
-        options = {
-            hostname: this.config.host,
-            port: this.config.port,
-            path: this.config.path,
-            method: this.config.method,
-            headers: this.config.headers,
-            auth: this.config.auth
-        };
-        if (this.config.secure) {
-            options.key = this.key;
-            options.cert = this.cert;
-            options.pfx = this.pfx;
-            options.agent = false;
-            options.rejectUnauthorized = this.config.validateCert;
+        if (method == 'form') {
+            req = req.type('form');
         }
+        if (this.config.path) {
+            req  = req.query(this.config.path);
+        }
+        if (this.config.port != '') {
+            req = req.set('port', this.config.port);
+        }
+
+        var usernm = (msg._Auth && msg._Auth.UserName) ?  msg._Auth.UserName : (this.config.auth ? this.config.auth.User : false);
+        var pass = (msg._Auth && msg._Auth.Password) ? msg._Auth.Password : (this.config.auth ? this.config.auth.Password : '');
+        if (usernm) {
+            req = req.auth(usernm, pass);
+        }
+        if (this.config.secure) {
+            req = req.agent(new this.http.Agent({
+                key: this.key,
+                cert: this.cert,
+                pfx: this.pfx,
+                rejectUnauthorized: this.config.validateCert
+            }));
+        }
+        if (msg._Timeout) {
+            req.timeout(msg._Timeout);
+        }
+
+        if (msg._FileAttachment) {
+            req = req.attach('file', msg._FileAttachment);
+        }
+
+        var headers = msg._Header || this.config.headers;
+        if (!headers['User-Agent']) {
+            headers['User-Agent'] = this.config.userAgent;
+        }
+        req = req.set(headers);
+
+        req.send(msg.data);
         var self = this;
         return when.promise(function(resolve, reject) {
 
-            var req = http.request(options, function(res) {
-                var resp = '';
-                msg.Headers = res.headers;
-                msg.HTTPStatus = res.statusCode;
-                res.on('data', function(data) {
-                    resp += data;
-                });
-                res.on('end', function() {
-                    msg.payload = resp;
-                    resolve(msg);
-                });
-                res.on('error', function(e) {
-                    self.log.error(e.message);
-                    msg._ErrorCode = '2038';
-                    msg._ErrorMessage = e.message;
-                    msg.payload = e;
-                    reject(msg);
-                });
-
-            });
-
             req.on('error', function(e) {
-                self.log.error(e.message);
+                self.log.error({_opcode:'HttpPort.execRequest', id:self.config.id, err: e.message});
                 msg._ErrorCode = '2038';
                 msg._ErrorMessage = e.message;
                 msg.payload = e;
                 reject(msg);
             });
+            req.end(function(res) {
+                msg.Headers = res.header;
+                msg.HTTPStatus = res.status;
+                msg.payload = {body: res.body, text: res.text};
+                resolve(msg);
+            });
 
-            req.write(msg.payload);
-            req.end();
         });
     };
 

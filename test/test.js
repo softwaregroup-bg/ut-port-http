@@ -27,22 +27,28 @@ m = wire({
                 logLevel: 'debug',
                 host: 'encrypted.google.com',
                 port: '',
-                method: 'GET',
+                method: 'get',
                 path: '/',
+                userAgent: 'ut5-HttpPort',
                 headers: {},
                 auth: {},
                 secure: true,
                 SSLKeyFile: '',
                 SSLCertFile: '',
                 SSLRootCertFile: '',
-                validateCert: true
+                validateCert: false
 
             },
             log: {$ref: 'bunyan'}
         }
     }
 }, {require: require}).then(function contextLoaded(context) {
-    var msgg = {payload:''};
+    var msgg = {
+        URL: 'https://git.softwaregroup-bg.com',
+        HTTPMethod: 'get',
+        data:''
+    };
+
     context.httpReq.execRequest(msgg).done(function ok (msg) {
         console.log('OK:');
         console.log(msg);
