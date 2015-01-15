@@ -52,7 +52,7 @@
             }
         } else {
             if (this.config.listen) {
-                this.http = require('https');
+                this.http = require('http');
             }
         }
     };
@@ -130,7 +130,8 @@
         }
         req = req.set(headers);
 
-        req.send(msg.data);
+        req.send(msg.payload);
+
         var self = this;
         return when.promise(function(resolve, reject) {
 
