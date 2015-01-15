@@ -28,7 +28,6 @@
             validateCert: true
         };
         this.http = null;
-        this.httpServer = null;
         this.key = '';
         this.cert = '';
         this.pfx = '';
@@ -50,45 +49,20 @@
             if (this.config.SSLRootCertFile != '') {
                 this.pfx = fs.readFileSync(this.config.SSLRootCertFile);
             }
-        } else {
-            if (this.config.listen) {
-                this.http = require('http');
-            }
         }
     };
 
     HttpPort.prototype.start = function start(callback) {
         Port.prototype.start.apply(this, arguments);
-        var options = {};
-        if (this.config.listen) {
-            if (this.config.secure) {
-                options = {
-                    key: this.key,
-                    cert: this.cert
-                };
-            }
-            this.httpServer = this.http.createServer(options, function(req, res) {
-                this.level.debug && this.log.debug(req);
-                var msg = this.receive(req);
-                //msg.headers = {'Content-Type': 'text/plain'}
-                res.writeHead(200, msg.headers);
-                res.write(msg.body);
-                res.end();
-            });
-
-            this.httpServer.listen(this.config.port, this.config.host);
-        }
+        this.pipeExec(this.exec);
     };
 
     HttpPort.prototype.stop = function ConsoleStop() {
         Port.prototype.stop.call(this);
-        if (this.httpServer != null) {
-            this.httpServer.close();
-            this.httpServer = null;
-        }
+
     };
 
-    HttpPort.prototype.execRequest = function execRequest(msg) {
+    HttpPort.prototype.exec = function exec(msg, callback) {
         var method = msg.HTTPMethod || this.config.method;
         var hostname = msg.URL || this.config.host;
         var req = request(method == 'get' ? 'GET' : 'POST', hostname);
@@ -133,22 +107,19 @@
         req.send(msg.payload);
 
         var self = this;
-        return when.promise(function(resolve, reject) {
 
-            req.on('error', function(e) {
-                self.log.error({_opcode:'HttpPort.execRequest', id:self.config.id, err: e.message});
-                msg._ErrorCode = '2038';
-                msg._ErrorMessage = e.message;
-                msg.payload = e;
-                reject(msg);
-            });
-            req.end(function(res) {
-                msg.Headers = res.header;
-                msg.HTTPStatus = res.status;
-                msg.payload = {body: res.body, text: res.text};
-                resolve(msg);
-            });
-
+        req.on('error', function(e) {
+            self.log.error({_opcode:'HttpPort.execRequest', id:self.config.id, err: e.message});
+            msg._ErrorCode = '2038';
+            msg._ErrorMessage = e.message;
+            msg.payload = e;
+            callback(msg, null);
+        });
+        req.end(function(res) {
+            msg.Headers = res.header;
+            msg.HTTPStatus = res.status;
+            msg.payload = {body: res.body, text: res.text};
+            callback(null, msg);
         });
     };
 
