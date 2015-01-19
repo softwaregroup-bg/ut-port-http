@@ -4,7 +4,6 @@
     var Port = require('ut-bus/port');
     var util = require('util');
     var fs = require('fs');
-    var when = require('when');
     var request = require('superagent');
 
     function HttpPort() {
@@ -15,7 +14,6 @@
             type: 'http',
             host: '127.0.0.1',
             port: '',
-            listen: false,
             method: 'get',
             path: '/',
             userAgent: 'ut5-HttpPort',
@@ -55,11 +53,6 @@
     HttpPort.prototype.start = function start(callback) {
         Port.prototype.start.apply(this, arguments);
         this.pipeExec(this.exec);
-    };
-
-    HttpPort.prototype.stop = function ConsoleStop() {
-        Port.prototype.stop.call(this);
-
     };
 
     HttpPort.prototype.exec = function exec(msg, callback) {
