@@ -20,9 +20,9 @@
             headers: {},
             auth: {},
             secure: false,
-            SSLKeyFile: '',
-            SSLCertFile: '',
-            SSLRootCertFile: '',
+            sslKeyFile: '',
+            sslCertFile: '',
+            sslRootCertFile: '',
             validateCert: true
         };
         this.http = null;
@@ -38,14 +38,14 @@
         if (this.config.secure) {
             this.http = require('https');
 
-            if (this.config.SSLKeyFile != '') {
-                this.key = fs.readFileSync(this.config.SSLKeyFile);
+            if (this.config.sslKeyFile != '') {
+                this.key = fs.readFileSync(this.config.sslKeyFile);
             }
-            if (this.config.SSLCertFile != '') {
-                this.cert = fs.readFileSync(this.config.SSLCertFile);
+            if (this.config.sslCertFile != '') {
+                this.cert = fs.readFileSync(this.config.sslCertFile);
             }
-            if (this.config.SSLRootCertFile != '') {
-                this.pfx = fs.readFileSync(this.config.SSLRootCertFile);
+            if (this.config.sslRootCertFile != '') {
+                this.pfx = fs.readFileSync(this.config.sslRootCertFile);
             }
         }
     };
@@ -56,8 +56,8 @@
     };
 
     HttpPort.prototype.exec = function exec(msg, callback) {
-        var method = msg.HTTPMethod || this.config.method;
-        var hostname = msg.URL || this.config.host;
+        var method = msg.httPMethod || this.config.method;
+        var hostname = msg.url || this.config.host;
         var req = request(method == 'get' ? 'GET' : 'POST', hostname);
 
         if (method == 'form') {
@@ -70,8 +70,8 @@
             req = req.set('port', this.config.port);
         }
 
-        var usernm = (msg._Auth && msg._Auth.UserName) ?  msg._Auth.UserName : (this.config.auth ? this.config.auth.User : false);
-        var pass = (msg._Auth && msg._Auth.Password) ? msg._Auth.Password : (this.config.auth ? this.config.auth.Password : '');
+        var usernm = (msg.auth && msg.auth.userName) ?  msg.auth.userName : (this.config.auth ? this.config.auth.user : false);
+        var pass = (msg.auth && msg.auth.password) ? msg.auth.password : (this.config.auth ? this.config.auth.password : '');
         if (usernm) {
             req = req.auth(usernm, pass);
         }
@@ -83,15 +83,15 @@
                 rejectUnauthorized: this.config.validateCert
             }));
         }
-        if (msg._Timeout) {
-            req.timeout(msg._Timeout);
+        if (msg.timeout) {
+            req.timeout(msg.timeout);
         }
 
-        if (msg._FileAttachment) {
-            req = req.attach('file', msg._FileAttachment);
+        if (msg.fileAttachment) {
+            req = req.attach('file', msg.fileAttachment);
         }
 
-        var headers = msg._Header || this.config.headers;
+        var headers = msg.Header || this.config.headers;
         if (!headers['User-Agent']) {
             headers['User-Agent'] = this.config.userAgent;
         }
@@ -102,15 +102,17 @@
         var self = this;
 
         req.on('error', function(e) {
-            self.log.error({_opcode:'HttpPort.execRequest', id:self.config.id, err: e.message});
-            msg._ErrorCode = '2038';
-            msg._ErrorMessage = e.message;
+            self.log.error({opcode:'HttpPort.exec', id:self.config.id, err: e.message});
+            msg.$$.mtid = 'error';
+            msg.$$.errorCode = '2038';
+            msg.$$.errorMessage = e.message;
             msg.payload = e;
             callback(msg, null);
         });
         req.end(function(res) {
-            msg.Headers = res.header;
-            msg.HTTPStatus = res.status;
+            msg.$$.mtid = 'response';
+            msg.headers = res.header;
+            msg.httpStatus = res.status;
             msg.payload = {body: res.body, text: res.text};
             callback(null, msg);
         });
