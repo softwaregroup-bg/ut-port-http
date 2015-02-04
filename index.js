@@ -52,7 +52,7 @@
 
     HttpPort.prototype.start = function start(callback) {
         Port.prototype.start.apply(this, arguments);
-        this.pipeExec(this.exec);
+        this.pipeExec(this.exec.bind(this));
     };
 
     HttpPort.prototype.exec = function exec(msg, callback) {
