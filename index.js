@@ -119,17 +119,18 @@
 
         req.end(function(res) {
             var restxt = '';
-            res.on('data', function(chunk){
+            var resData = {
+                $$: {mtid: 'response'},
+                headers: res.header,
+                httpStatus: res.status,
+                payload: restxt
+            };
+
+            res.res.on('data', function(chunk){
                 restxt += chunk;
             });
-            res.on('end', function () {
-
-                var resData = {
-                    $$: {mtid: 'response'},
-                    headers: res.header,
-                    httpStatus: res.status,
-                    payload: restxt
-                };
+            res.res.on('end', function () {
+                resData.payload = restxt;
                 if(res.headers['content-type'].indexOf('application/xml') != -1){
                     xml2js.parseString(restxt,{ explicitArray: false }, function (err, result) {
                         if(err){
@@ -156,6 +157,8 @@
                     }
                 }, null);
             }
+            resData.payload = res.text;
+            callback(null, resData);
         });
 
     };
