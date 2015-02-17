@@ -118,14 +118,28 @@
 
 
         req.end(function(res) {
-            var restxt = '';
+            if(res.status != 200){
+                self.log.error('Http client request error: ' + res.text);
+                callback({
+                    $$: {mtid: 'error',
+                        errorCode: res.status,
+                        errorMessage: 'Http client request error!',
+                    }
+                }, null);
+            }
+
             var resData = {
                 $$: {mtid: 'response'},
                 headers: res.header,
                 httpStatus: res.status,
                 payload: restxt
             };
-
+            if(res.text) {
+                resData.payload = res.text;
+                callback(null, resData);
+                return;
+            }
+            var restxt = '';
             res.res.on('data', function(chunk){
                 restxt += chunk;
             });
@@ -148,17 +162,7 @@
                     callback(null, resData);
                 }
             });
-            if(res.status != 200){
-                self.log.error('Http client request error: ' + res.text);
-                callback({
-                    $$: {mtid: 'error',
-                        errorCode: res.status,
-                        errorMessage: 'Http client request error!',
-                    }
-                }, null);
-            }
-            resData.payload = res.text;
-            callback(null, resData);
+
         });
 
     };
