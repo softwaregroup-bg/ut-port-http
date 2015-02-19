@@ -1,5 +1,4 @@
 (function(define) {define(function(require) {
-    //dependencies
 
     var Port = require('ut-bus/port');
     var util = require('util');
