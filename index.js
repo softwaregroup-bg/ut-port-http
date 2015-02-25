@@ -98,15 +98,20 @@
             req = req.attach('file', msg.fileAttachment);
         }
 
-        var headers = msg.headers || this.config.headers;
+        var headers = msg.headers || this.config.headers || {};
         if (!headers['User-Agent']) {
-            headers['User-Agent'] = this.config.userAgent;
+            headers['User-Agent'] = this.config.userAgent || 'ut5-HttpPort';
         }
         req = req.set(headers);
 
         var self = this;
 
-        req.send(msg.payload);
+        if (typeof msg.payload == 'string'){
+            req.set(headers).send(msg.payload);
+        } else {
+            headers['content-type'] = 'application/json';
+            req.set(headers).send(JSON.stringify(msg.payload));
+        }
 
         req.on('error', function(e) {
             self.log.error('Http client request error:' + e.message);
@@ -116,52 +121,67 @@
             callback(msg, null);
         });
 
-
         req.end(function(res) {
             if(res.status != 200){
                 self.log.error('Http client request error: ' + res.text);
                 callback({
                     $$: {mtid: 'error',
                         errorCode: res.status,
-                        errorMessage: 'Http client request error!',
+                        errorMessage: 'Http client: Remote server encountered an error processing the request!',
                     }
                 }, null);
             }
 
-            var resData = {
-                $$: {mtid: 'response'},
-                headers: res.header,
-                httpStatus: res.status,
-                payload: restxt
-            };
-            if(res.text) {
-                resData.payload = res.text;
-                callback(null, resData);
-                return;
-            }
-            var restxt = '';
-            res.res.on('data', function(chunk){
-                restxt += chunk;
-            });
-            res.res.on('end', function () {
-                resData.payload = restxt;
+            function handleResponse(res, body){
+                var resData = {
+                    $$: {mtid: 'response', callback: msg && msg.$$ && msg.$$.callback},
+                    headers: res.header,
+                    httpStatus: res.status,
+                    payload: restxt
+                };
                 if(res.headers['content-type'].indexOf('application/xml') != -1){
-                    xml2js.parseString(restxt,{ explicitArray: false }, function (err, result) {
+                    xml2js.parseString(body,{ explicitArray: false }, function (err, result) {
                         if(err){
                             self.log.error('Unable to parse xml response! errorMessage:' + err.message);
                             resData.$$.mtid = 'error';
                             resData.$$.errorCode = '2038';
                             resData.$$.errorMessage = 'Unable to parse xml response';
-                            callback(resData, null);
+                            callback(resData);
                         }else{
                             resData.payload = result;
                             callback(null, resData);
                         }
                     });
-                }else{
+                } else if(res.headers['content-type'].indexOf('application/json') != -1){
+                    try {
+                        resData.payload = JSON.parse(body)
+                    } catch (err) {
+                        self.log.error('Unable to parse json response! errorMessage:' + err.message);
+                        resData.$$.mtid = 'error';
+                        resData.$$.errorCode = '2038';
+                        resData.$$.errorMessage = 'Unable to parse json response';
+                        callback(resData);
+                        return;
+                    }
+                    callback(null, resData);
+                } else {
+                    resData.payload = body;
                     callback(null, resData);
                 }
-            });
+
+            }
+
+            if(res.text) {
+                handleResponse(res, res.text)
+            } else {
+                var restxt = '';
+                res.res.on('data', function(chunk){
+                    restxt += chunk;
+                });
+                res.res.on('end', function () {
+                    handleResponse(res, restxt);
+                });
+            }
 
         });
 
