@@ -102,7 +102,6 @@
         if (!headers['User-Agent']) {
             headers['User-Agent'] = this.config.userAgent || 'ut5-HttpPort';
         }
-        req = req.set(headers);
 
         var self = this;
 
