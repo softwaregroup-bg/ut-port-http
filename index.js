@@ -101,7 +101,6 @@
         if (!headers['User-Agent']) {
             headers['User-Agent'] = this.config.userAgent || 'ut5-HttpPort';
         }
-
         var self = this;
 
         if (typeof msg.payload == 'string'){
