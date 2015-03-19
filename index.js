@@ -131,12 +131,12 @@
 
             function handleResponse(res, body){
                 var resData = {
-                    $$: {mtid: 'response', callback: msg && msg.$$ && msg.$$.callback},
+                    $$: {mtid: 'response', callback: msg && msg.$$ && msg.$$.callback, opcode: msg && msg.$$ && msg.$$.opcode},
                     headers: res.header,
                     httpStatus: res.status,
                     payload: restxt
                 };
-                if(res.headers['content-type'].indexOf('application/xml') != -1){
+                if(res.headers['content-type'].indexOf('application/xml') != -1 || self.config.parseXml){
                     xml2js.parseString(body,{ explicitArray: false }, function (err, result) {
                         if(err){
                             self.log.error('Unable to parse xml response! errorMessage:' + err.message);
