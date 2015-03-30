@@ -127,6 +127,7 @@
                         errorMessage: 'Http client: Remote server encountered an error processing the request!',
                     }
                 }, null);
+                return;
             }
 
             function handleResponse(res, body){
@@ -137,7 +138,7 @@
                     payload: restxt
                 };
                 if(res.headers['content-type'].indexOf('application/xml') != -1 || self.config.parseXml){
-                    xml2js.parseString(body,{ explicitArray: false }, function (err, result) {
+                    return xml2js.parseString(body,{ explicitArray: false }, function (err, result) {
                         if(err){
                             self.log.error('Unable to parse xml response! errorMessage:' + err.message);
                             resData.$$.mtid = 'error';
@@ -169,7 +170,7 @@
             }
 
             if(res.text) {
-                handleResponse(res, res.text)
+                return handleResponse(res, res.text);
             } else {
                 var restxt = '';
                 res.res.on('data', function(chunk){
