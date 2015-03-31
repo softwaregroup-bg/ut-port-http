@@ -63,11 +63,21 @@
             hostname += ':' + prt;
         }
         var pth = msg.path || this.config.path;
-        if (this.config.path || msg.path) {
+        if (pth) {
             hostname += pth;
         }
 
         var req = request(method == 'get' ? 'GET' : 'POST', hostname);
+
+        if (this.config.secure) {
+            var agnt = new this.http.Agent({
+                key: this.key,
+                 cert: this.cert,
+                 pfx: this.pfx,
+                rejectUnauthorized: false
+            });
+            req = req.agent(agnt);
+        }
 
         if(prt){
             req = req.set('port', prt);
@@ -81,14 +91,7 @@
         if (usernm) {
             req = req.auth(usernm, pass);
         }
-        if (this.config.secure) {
-            req = req.agent(new this.http.Agent({
-                key: this.key,
-                cert: this.cert,
-                pfx: this.pfx,
-                rejectUnauthorized: this.config.validateCert
-            }));
-        }
+
         if (msg.timeout) {
             req.timeout(msg.timeout);
         }
@@ -99,7 +102,7 @@
 
         var headers = msg.headers || this.config.headers || {};
         if (!headers['User-Agent']) {
-            headers['User-Agent'] = this.config.userAgent || 'ut5-HttpPort';
+            headers['User-Agent'] = this.config.userAgent || 'Software Group UT-Route 5';
         }
         var self = this;
 
