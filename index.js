@@ -16,7 +16,7 @@
             port: '',
             method: 'get',
             path: '/',
-            userAgent: 'ut5-HttpPort',
+            userAgent: '',
             headers: {},
             auth: {},
             secure: false,
@@ -140,7 +140,7 @@
                     httpStatus: res.status,
                     payload: restxt
                 };
-                if(res.headers['content-type'].indexOf('application/xml') != -1 || self.config.parseXml){
+                if(res.headers['content-type'].indexOf('application/xml') != -1){
                     return xml2js.parseString(body,{ explicitArray: false }, function (err, result) {
                         if(err){
                             self.log.error('Unable to parse xml response! errorMessage:' + err.message);
