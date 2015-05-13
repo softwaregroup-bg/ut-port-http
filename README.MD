@@ -25,7 +25,7 @@ Create requests using `http` or `https` protocol.
  
  * `logLevel`: trace, debug or info. 
  
- * `host`: remote server IP addres. 
+ * `host`: remote server IP addres.
  
  * `method`: http request method `POST` or `GET`.  
  
@@ -36,6 +36,8 @@ Create requests using `http` or `https` protocol.
  Additional configuration options:
  
 * `port`: remote server port.
+
+* `requestTimeout`: in ms, time before tiemout error emmit.
 
 * `path`: query-string, default is `/`.
 
