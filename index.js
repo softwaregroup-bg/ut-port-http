@@ -1,95 +1,101 @@
-(function(define) {define(function(require) {
+var Port = require('ut-bus/port');
+var util = require('util');
+var fs = require('fs');
+var request = require('superagent');
+var xml2js = require('xml2js');
 
-    var Port = require('ut-bus/port');
-    var util = require('util');
-    var fs = require('fs');
-    var request = require('superagent');
-    var xml2js = require('xml2js');
+function HttpPort() {
+    Port.call(this);
+    this.config = {
+        id: null,
+        logLevel: '',
+        type: 'http',
+        host: '127.0.0.1',
+        port: '',
+        method: 'get',
+        path: '/',
+        userAgent: '',
+        headers: {},
+        auth: {},
+        secure: false,
+        sslKeyFile: '',
+        sslCertFile: '',
+        sslRootCertFile: '',
+        validateCert: true
+    };
+    this.http = null;
+    this.key = '';
+    this.cert = '';
+    this.pfx = '';
+}
 
-    function HttpPort() {
-        Port.call(this);
-        this.config = {
-            id: null,
-            logLevel: '',
-            type: 'http',
-            host: '127.0.0.1',
-            port: '',
-            method: 'get',
-            path: '/',
-            userAgent: '',
-            headers: {},
-            auth: {},
-            secure: false,
-            sslKeyFile: '',
-            sslCertFile: '',
-            sslRootCertFile: '',
-            validateCert: true
-        };
-        this.http = null;
-        this.key = '';
-        this.cert = '';
-        this.pfx = '';
+util.inherits(HttpPort, Port);
+
+HttpPort.prototype.init = function init() {
+    Port.prototype.init.apply(this, arguments);
+    if (this.config.secure) {
+        this.http = require('https');
+
+        if (this.config.sslKeyFile && this.config.sslKeyFile !== '') {
+            this.key = fs.readFileSync(this.config.sslKeyFile);
+        }
+        if (this.config.sslCertFile && this.config.sslCertFile !== '') {
+            this.cert = fs.readFileSync(this.config.sslCertFile);
+        }
+        if (this.config.sslRootCertFile && this.config.sslRootCertFile !== '') {
+            this.pfx = fs.readFileSync(this.config.sslRootCertFile);
+        }
+    }
+};
+
+HttpPort.prototype.start = function start(callback) {
+    Port.prototype.start.apply(this, arguments);
+    this.pipeExec(this.exec.bind(this));
+};
+
+HttpPort.prototype.exec = function exec(msg, callback) {
+    var self = this;
+    var req;
+    var method = msg.httpMethod || this.config.method;
+    var hostname = msg.url || this.config.host;
+    var prt = msg.port || this.config.port;
+    var username = (msg.auth && msg.auth.userName) ?  msg.auth.userName : (this.config.auth ? this.config.auth.user : false);
+    var pass = (msg.auth && msg.auth.password) ? msg.auth.password : (this.config.auth ? this.config.auth.password : '');
+    var headers = msg.headers || this.config.headers || {};
+
+    if (prt) {
+        hostname += ':' + prt;
+    }
+    var pth = msg.path || this.config.path;
+    if (pth) {
+        hostname += pth;
     }
 
-    util.inherits(HttpPort, Port);
-
-    HttpPort.prototype.init = function init() {
-        Port.prototype.init.apply(this, arguments);
+    try {
         if (this.config.secure) {
-            this.http = require('https');
-
-            if (this.config.sslKeyFile && this.config.sslKeyFile != '') {
-                this.key = fs.readFileSync(this.config.sslKeyFile);
+            if (!hostname.match(/^https\:\/\//i)) {
+                hostname = 'https://' + hostname.replace(/^[^\/]\:\/\//i, '');
             }
-            if (this.config.sslCertFile && this.config.sslCertFile != '') {
-                this.cert = fs.readFileSync(this.config.sslCertFile);
-            }
-            if (this.config.sslRootCertFile && this.config.sslRootCertFile != '') {
-                this.pfx = fs.readFileSync(this.config.sslRootCertFile);
-            }
-        }
-    };
-
-    HttpPort.prototype.start = function start(callback) {
-        Port.prototype.start.apply(this, arguments);
-        this.pipeExec(this.exec.bind(this));
-    };
-
-    HttpPort.prototype.exec = function exec(msg, callback) {
-        var method = msg.httpMethod || this.config.method;
-        var hostname = msg.url || this.config.host;
-        var prt = msg.port || this.config.port;
-        if (this.config.port || msg.port) {
-            hostname += ':' + prt;
-        }
-        var pth = msg.path || this.config.path;
-        if (pth) {
-            hostname += pth;
-        }
-
-        var req = request(method == 'get' ? 'GET' : 'POST', hostname);
-
-        if (this.config.secure) {
+            req = request(method === 'get' ? 'GET' : 'POST', hostname);
             var agnt = new this.http.Agent({
                 key: this.key,
-                 cert: this.cert,
-                 pfx: this.pfx,
-                rejectUnauthorized: false
+                cert: this.cert,
+                pfx: this.pfx,
+                rejectUnauthorized: this.config.validateCert
             });
-            req = req.agent(agnt);
+            req.agent(agnt);
+        } else {
+            req = request(method === 'get' ? 'GET' : 'POST', hostname);
         }
-
-        if(prt){
+        if (prt) {
             req = req.set('port', prt);
         }
-        if (method == 'form') {
+        if (method === 'form') {
             req = req.type('form');
         }
 
-        var usernm = (msg.auth && msg.auth.userName) ?  msg.auth.userName : (this.config.auth ? this.config.auth.user : false);
-        var pass = (msg.auth && msg.auth.password) ? msg.auth.password : (this.config.auth ? this.config.auth.password : '');
-        if (usernm) {
-            req = req.auth(usernm, pass);
+        if (username) {
+            req = req.auth(username, pass);
         }
 
         if (msg.timeout) {
@@ -100,13 +106,11 @@
             req = req.attach('file', msg.fileAttachment);
         }
 
-        var headers = msg.headers || this.config.headers || {};
         if (!headers['User-Agent']) {
             headers['User-Agent'] = this.config.userAgent || 'Software Group UT-Route 5';
         }
-        var self = this;
 
-        if (typeof msg.payload == 'string'){
+        if (typeof msg.payload === 'string') {
             req.set(headers).send(msg.payload);
         } else {
             headers['content-type'] = 'application/json';
@@ -122,47 +126,46 @@
         });
 
         req.end(function(res) {
-            if(res.status != 200){
+            if (res.status.toString() !== '200') {
                 self.log.error('Http client request error: ' + res.text);
-                callback({
-                    $$: {mtid: 'error',
+                return callback({
+                    $$: {
+                        mtid: 'error',
                         errorCode: res.status,
-                        errorMessage: 'Http client: Remote server encountered an error processing the request!',
+                        errorMessage: 'Http client: Remote server encountered an error processing the request!'
                     }
                 }, null);
-                return;
             }
 
-            function handleResponse(res, body){
+            function handleResponse(res, body) {
                 var resData = {
                     $$: {mtid: 'response', callback: msg && msg.$$ && msg.$$.callback, opcode: msg && msg.$$ && msg.$$.opcode},
                     headers: res.header,
                     httpStatus: res.status,
                     payload: restxt
                 };
-                if(res.headers['content-type'].indexOf('application/xml') != -1){
-                    return xml2js.parseString(body,{ explicitArray: false }, function (err, result) {
-                        if(err){
+                if (res.headers['content-type'].indexOf('application/xml') !== -1) {
+                    return xml2js.parseString(body, {explicitArray: false}, function(err, result) {
+                        if (err) {
                             self.log.error('Unable to parse xml response! errorMessage:' + err.message);
                             resData.$$.mtid = 'error';
                             resData.$$.errorCode = '2038';
                             resData.$$.errorMessage = 'Unable to parse xml response';
                             callback(resData);
-                        }else{
+                        } else {
                             resData.payload = result;
                             callback(null, resData);
                         }
                     });
-                } else if(res.headers['content-type'].indexOf('application/json') != -1){
+                } else if (res.headers['content-type'].indexOf('application/json') !== -1) {
                     try {
-                        resData.payload = JSON.parse(body)
+                        resData.payload = JSON.parse(body);
                     } catch (err) {
                         self.log.error('Unable to parse json response! errorMessage:' + err.message);
                         resData.$$.mtid = 'error';
                         resData.$$.errorCode = '2038';
                         resData.$$.errorMessage = 'Unable to parse json response';
-                        callback(resData);
-                        return;
+                        return callback(resData);
                     }
                     callback(null, resData);
                 } else {
@@ -172,22 +175,25 @@
 
             }
 
-            if(res.text) {
+            if (res.text) {
                 return handleResponse(res, res.text);
             } else {
                 var restxt = '';
-                res.res.on('data', function(chunk){
+                res.res.on('data', function(chunk) {
                     restxt += chunk;
                 });
-                res.res.on('end', function () {
+                res.res.on('end', function() {
                     handleResponse(res, restxt);
                 });
             }
 
         });
+    } catch (e) {
+        msg.$$.mtid = 'error';
+        msg.$$.errorCode = '2038';
+        msg.$$.errorMessage = e.message;
+        return callback(msg, null);
+    }
+};
 
-    };
-
-    return HttpPort;
-
-});}(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
+module.exports = HttpPort;
