@@ -55,6 +55,7 @@ HttpPort.prototype.start = function start(callback) {
 
 HttpPort.prototype.exec = function exec(msg, callback) {
     var self = this;
+    var req;
     var method = msg.httpMethod || this.config.method;
     var hostname = msg.url || this.config.host;
     var prt = msg.port || this.config.port;
@@ -71,7 +72,6 @@ HttpPort.prototype.exec = function exec(msg, callback) {
     }
 
     try {
-        var req;
         if (this.config.secure) {
             if (!hostname.match(/^https\:\/\//i)) {
                 hostname = 'https://' + hostname.replace(/^[^\/]\:\/\//i, '');
