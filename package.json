@@ -1,6 +1,6 @@
 {
   "name": "ut-port-http",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "dependencies": {
     "superagent": "~0.21.0",
     "ut-bus": "~5.0.0",
