@@ -100,8 +100,8 @@ HttpPort.prototype.exec = function exec(msg, callback) {
 
         if (msg.timeout) {
             req.timeout(msg.timeout);
-        } else {
-            req.timeout(this.config.requestTimeout || 5000);
+        } else if(this.config.requestTimeout) {
+            req.timeout(this.config.requestTimeout);
         }
 
         if (msg.fileAttachment) {
