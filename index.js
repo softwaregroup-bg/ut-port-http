@@ -1,8 +1,11 @@
 var Port = require('ut-bus/port');
 var util = require('util');
 var fs = require('fs');
-var request = require('superagent');
+var errors = require('./errors.js');
+var request = require('request');
 var xml2js = require('xml2js');
+var when = require('when');
+var _ = require('lodash');
 
 function HttpPort() {
     Port.call(this);
@@ -10,192 +13,111 @@ function HttpPort() {
         id: null,
         logLevel: '',
         type: 'http',
-        host: '127.0.0.1',
-        port: '',
+        url: false,
         method: 'get',
-        path: '/',
-        userAgent: '',
-        headers: {},
-        auth: {},
-        secure: false,
-        sslKeyFile: '',
-        sslCertFile: '',
-        sslRootCertFile: '',
-        validateCert: true
+        uri: '/',
+        headers: {}
     };
-    this.http = null;
-    this.key = '';
-    this.cert = '';
-    this.pfx = '';
 }
 
 util.inherits(HttpPort, Port);
 
 HttpPort.prototype.init = function init() {
     Port.prototype.init.apply(this, arguments);
-    if (this.config.secure) {
-        this.http = require('https');
-
-        if (this.config.sslKeyFile && this.config.sslKeyFile !== '') {
-            this.key = fs.readFileSync(this.config.sslKeyFile);
-        }
-        if (this.config.sslCertFile && this.config.sslCertFile !== '') {
-            this.cert = fs.readFileSync(this.config.sslCertFile);
-        }
-        if (this.config.sslRootCertFile && this.config.sslRootCertFile !== '') {
-            this.pfx = fs.readFileSync(this.config.sslRootCertFile);
-        }
-    }
 };
 
 HttpPort.prototype.start = function start(callback) {
     Port.prototype.start.apply(this, arguments);
     this.pipeExec(this.exec.bind(this));
 };
-
 HttpPort.prototype.exec = function exec(msg, callback) {
+    var url = '';
     var self = this;
-    var req;
-    var method = msg.httpMethod || this.config.method;
-    var hostname = msg.url || this.config.host;
-    var prt = msg.port || this.config.port;
-    var username = (msg.auth && msg.auth.userName) ?  msg.auth.userName : (this.config.auth ? this.config.auth.user : false);
-    var pass = (msg.auth && msg.auth.password) ? msg.auth.password : (this.config.auth ? this.config.auth.password : '');
     var headers = msg.headers || this.config.headers || {};
-
-    if (prt) {
-        hostname += ':' + prt;
+    headers['User-Agent'] = headers['User-Agent'] || 'Software Group UT-Route 5';
+    var parseResponse = true;
+    if (this.config.parseResponse === false) {
+        parseResponse = false;
     }
-    var pth = msg.path || this.config.path;
-    if (pth) {
-        hostname += pth;
+    if (msg.parseResponse === false) {
+        parseResponse = false;
     }
 
-    try {
-        if (this.config.secure) {
-            if (!hostname.match(/^https\:\/\//i)) {
-                hostname = 'https://' + hostname.replace(/^[^\/]\:\/\//i, '');
-            }
-            req = request(method === 'get' ? 'GET' : 'POST', hostname);
-            var agnt = new this.http.Agent({
-                key: this.key,
-                cert: this.cert,
-                pfx: this.pfx,
-                rejectUnauthorized: this.config.validateCert
-            });
-            req.agent(agnt);
+    //check for required params
+    if (!(url = msg.url || this.config.url)) {
+        callback(errors.createUT5('ConfigPropMustdBeSet', 'url should be set'));
+    } else {
+        url = url + (msg.uri || this.config.uri || '');
+    }
+
+    var connProps = {
+        'followRedirect': false,
+        'method': msg.httpMethod || this.config.method,
+        'url': url,
+        'timeout': msg.requestTimeout || this.config.requestTimeout || 30000,
+        'headers': headers,
+        'body': msg.payload
+    };
+    //if there is a raw config propery it will be merged with `connProps`
+    if (this.config.raw) {
+        _.assign(connProps, this.config.raw);
+    }
+    (this.log && this.log.info && this.log.info('Request to: ' + connProps.url));
+    //do the connection + request
+    request(connProps, function cbresp(error, response, body) {
+        if (error) {//return error if any
+            return callback({'$$':{'mtid':'error', 'errorCode':error.code, 'errorMessage': error.message}});
         } else {
-            req = request(method === 'get' ? 'GET' : 'POST', hostname);
-        }
-        if (prt) {
-            req = req.set('port', prt);
-        }
-        if (method === 'form') {
-            req = req.type('form');
-        }
-
-        if (username) {
-            req = req.auth(username, pass);
-        }
-
-        if (msg.timeout) {
-            req.timeout(msg.timeout);
-        } else if(this.config.requestTimeout) {
-            req.timeout(this.config.requestTimeout);
-        }
-
-        if (msg.fileAttachment) {
-            req = req.attach('file', msg.fileAttachment);
-        }
-
-        if (!headers['User-Agent']) {
-            headers['User-Agent'] = this.config.userAgent || 'Software Group UT-Route 5';
-        }
-
-        if (typeof msg.payload === 'string') {
-            req.set(headers).send(msg.payload);
-        } else {
-            headers['content-type'] = 'application/json';
-            req.set(headers).send(JSON.stringify(msg.payload));
-        }
-
-        req.on('error', function(e) {
-            self.log.error('Http client request error:' + e.message);
-            msg.$$.mtid = 'error';
-            msg.$$.errorCode = '2038';
-            msg.$$.errorMessage = e.message;
-            callback(msg, null);
-        });
-
-        req.end(function(res) {
-            if (res.status.toString() !== '200') {
-                self.log.error('Http client request error: ' + res.text);
-                return callback({
-                    $$: {
-                        mtid: 'error',
-                        errorCode: res.status,
-                        errorMessage: 'Http client: Remote server encountered an error processing the request!'
-                    }
-                }, null);
+            //prepare response
+            var correctResponse = {
+                $$: {mtid: 'response', callback: msg && msg.$$ && msg.$$.callback, opcode: msg && msg.$$ && msg.$$.opcode},
+                headers: response.headers,
+                httpStatus: response.statusCode,
+                payload: body
+            };
+            if(response.statusCode != 200){
+                self.log.error('Http client request error: ' + body);
+                return callback({'$$':{'mtid':'error', 'errorCode': response.statusCode,
+                    'errorMessage': 'Http client: Remote server encountered an error processing the request!'
+                }});
             }
 
-            function handleResponse(res, body) {
-                var resData = {
-                    $$: {mtid: 'response', callback: msg && msg.$$ && msg.$$.callback, opcode: msg && msg.$$ && msg.$$.opcode},
-                    headers: res.header,
-                    httpStatus: res.status,
-                    payload: restxt
-                };
-                if (res.headers['content-type'].indexOf('application/xml') !== -1) {
-                    return xml2js.parseString(body, {explicitArray: false}, function(err, result) {
-                        if (err) {
-                            self.log.error('Unable to parse xml response! errorMessage:' + err.message);
-                            resData.$$.mtid = 'error';
-                            resData.$$.errorCode = '2038';
-                            resData.$$.errorMessage = 'Unable to parse xml response';
-                            callback(resData);
-                        } else {
-                            resData.payload = result;
-                            callback(null, resData);
-                        }
-                    });
-                } else if (res.headers['content-type'].indexOf('application/json') !== -1) {
-                    try {
-                        resData.payload = JSON.parse(body);
-                    } catch (err) {
-                        self.log.error('Unable to parse json response! errorMessage:' + err.message);
-                        resData.$$.mtid = 'error';
-                        resData.$$.errorCode = '2038';
-                        resData.$$.errorMessage = 'Unable to parse json response';
-                        return callback(resData);
-                    }
-                    callback(null, resData);
-                } else {
-                    resData.payload = body;
-                    callback(null, resData);
-                }
-
-            }
-
-            if (res.text) {
-                return handleResponse(res, res.text);
+            if (!body || body === '') {//if response is empty
+                correctResponse.payload = ((parseResponse) ? {} : body);
+                return callback(null, correctResponse);
             } else {
-                var restxt = '';
-                res.res.on('data', function(chunk) {
-                    restxt += chunk;
-                });
-                res.res.on('end', function() {
-                    handleResponse(res, restxt);
-                });
-            }
+                //parse the response if allowed
+                if (parseResponse) {
+                    if (!response.headers['content-type']) {
+                        return callback(errors.createUT5('MissingContentType'));
+                    } else {
 
-        });
-    } catch (e) {
-        msg.$$.mtid = 'error';
-        msg.$$.errorCode = '2038';
-        msg.$$.errorMessage = e.message;
-        return callback(msg, null);
-    }
+                        if (response.headers['content-type'].indexOf('/xml') !== -1) {
+                            return xml2js.parseString(body, {explicitArray: false}, function(err, result) {
+                                if (err) {
+                                    callback(errors.createUT5('XmlParser', err));
+                                } else {
+                                    correctResponse.payload = result
+                                    callback(null, correctResponse);
+                                }
+                            });
+                        } else if (response.headers['content-type'].indexOf('application/json') !== -1) {
+                            try {
+                                correctResponse.payload = JSON.parse(body);
+                            } catch (err) {
+                                return callback(errors.createUT5('JsonParser', err));
+                            }
+                            return callback(null, correctResponse);
+                        } else {
+                            return callback(errors.createUT5('ParserNotFound', 'No parser found to parse response of type: ' + response.headers['content-type']));
+                        }
+                    }
+                }
+                //finally return the result
+                return callback(null, correctResponse);
+            }
+        }
+    });
 };
 
 module.exports = HttpPort;

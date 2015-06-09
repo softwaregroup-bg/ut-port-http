@@ -1,6 +1,6 @@
 # UT Port HTTP Client
 
-Create requests using `http` or `https` protocol.
+Create http/s requests based on [`request`](https://github.com/request/request/blob/master/README.md#requestoptions-callback) module
 
 ## USAGE
 
@@ -10,7 +10,8 @@ Create requests using `http` or `https` protocol.
     id: '',
     type: 'http',
     logLevel: '',
-    host: '',
+    url: '',
+    uri: '',
     method: '',
 
     receive:function(msg) {
@@ -25,7 +26,9 @@ Create requests using `http` or `https` protocol.
  
  * `logLevel`: trace, debug or info. 
  
- * `host`: remote server IP addres.
+ * `url`: remote server URL `http://example.com:80`.
+ 
+ * `uri`: remote server request URI `/about.html`.
  
  * `method`: http request method `POST` or `GET`.  
  
@@ -35,29 +38,17 @@ Create requests using `http` or `https` protocol.
  
  Additional configuration options:
  
-* `port`: remote server port.
+* `raw`: this property can be set in config file only, everything in this property will be merged with current configuration
 
-* `requestTimeout`: in ms, time before tiemout error emmit.
+* `parseResponse`: to parse the response or not, defaults to `true`
 
-* `path`: query-string, default is `/`.
+* `requestTimeout`: in ms, time before timeout error emmit, defaults to 30 sec.
 
-* `secure`: `true` or `false` determine whether connection have to be secure or not using `https` protocol. If set to true there is additional options:
-    * `validateCert`: `true` or `false` If `true`, checks if the server certificate is valid. Default true.
-    * `sslKeyFile`: path to file
-    * `sslCertFile`: path to file
-    * `sslRootCertFile`: path to file
-    
 * `headers`: object containing request header values.
-* `auth`: object containing basic authentication. Property names: `userName` and `password`.
+
+* `namespace`: Array containing diferent namespaces of this port.
+
 * `start`: function that will be called once on creation of port. It can be used for setting global variables and initialising objects.
-* `namespace`: Array containing diferent namespaces of this port. 
-
-In order to send request to remote server this port receive a message object. All cofiguration options can be overrided and replaced dynamicaly by setting them in this message object.             
-Message object property `payload` contains request body data that will be send. If `payload` is object it will be converted to JSON string and request header `content-type` will be set to `application/json`
-With message object can be set additional options:    
-
-* `timeout`: set request timeout in miliseconds
-* `fileAttachment`: path to file
 
 #### Response:
 
@@ -74,7 +65,7 @@ If server returns status code different from `200 (OK)` or some error occured du
 ```
 
 Message proporties:
-* `payload`: Contains response data returned from the remote server. If header `content-type` is `application/xml` the data will be converted to javascript object. If `content-type` is `application/json` the data will be converted to json object.
+* `payload`: Contains response data returned from the remote server. If header `content-type` contains `/xml` and `parseResponse = true` the data will be converted to javascript object, the same is for Json, if for some reason `parseResponse=true` and there is not parser available for parsing the response, error will be emitted 
 * `headers`: Response headers.
 * `httpStatus`: Response status code.
 
@@ -88,11 +79,9 @@ module.exports = {
     id: 't24',
     type: 'http',
     logLevel: 'trace',
-    host: 'twsdevcloudservice.cloudapp.net',
-    port: 8011,
-    path: '/swg/swg.svc',
+    url: 'http://twsdevcloudservice.cloudapp.net',
+    uri: '/swg/swg.svc',
     method: 'post',
-    secure: false,
     namespace: ['cbs'],
 
     start: function() {

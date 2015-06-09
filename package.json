@@ -1,10 +1,9 @@
 {
   "name": "ut-port-http",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "dependencies": {
-    "superagent": "~0.21.0",
-    "ut-bus": "~5.0.0",
-    "xml2js": "~0.4.5"
+    "errno": "^0.1.2",
+    "request": "~2.55.0"
   },
   "publishConfig": {
     "registry": "http://npm.softwaregroup-bg.com:5001"
