@@ -70,7 +70,7 @@ HttpPort.prototype.exec = function exec(msg, callback) {
         } else {
             //prepare response
             var correctResponse = {
-                $$: {mtid: 'response', callback: msg && msg.$$ && msg.$$.callback, opcode: msg && msg.$$ && msg.$$.opcode},
+                $$: {mtid: 'response', opcode: msg && msg.$$ && msg.$$.opcode},
                 headers: response.headers,
                 httpStatus: response.statusCode,
                 payload: body
