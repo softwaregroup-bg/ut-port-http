@@ -62,7 +62,6 @@ HttpPort.prototype.exec = function exec(msg, callback) {
     if (this.config.raw) {
         _.assign(connProps, this.config.raw);
     }
-    (this.log && this.log.info && this.log.info('Request to: ' + connProps.url));
     //do the connection + request
     request(connProps, function cbresp(error, response, body) {
         if (error) {//return error if any
