@@ -76,7 +76,7 @@ HttpPort.prototype.exec = function exec(msg, callback) {
                 payload: body
             };
             if(response.statusCode != 200){
-                self.log.error('Http client request error: ' + body);
+                self.log && self.log.error && self.log.error('Http client request error! body: ' + body + ', statusCode: ' + response.statusCode+', statusMessage: ' + response.statusMessage);
                 return callback({'$$':{'mtid':'error', 'errorCode': response.statusCode,
                     'errorMessage': 'Http client: Remote server encountered an error processing the request!'
                 }});
@@ -92,7 +92,7 @@ HttpPort.prototype.exec = function exec(msg, callback) {
                         return callback(errors.createUT5('MissingContentType'));
                     } else {
 
-                        if (response.headers['content-type'].indexOf('/xml') !== -1) {
+                        if (response.headers['content-type'].indexOf('/xml') !== -1 || response.headers['content-type'].indexOf('/soap+xml') !== -1) {
                             return xml2js.parseString(body, {explicitArray: false}, function(err, result) {
                                 if (err) {
                                     callback(errors.createUT5('XmlParser', err));
