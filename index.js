@@ -28,7 +28,7 @@ HttpPort.prototype.init = function init() {
 
 HttpPort.prototype.start = function start(callback) {
     Port.prototype.start.apply(this, arguments);
-    this.pipeExec(this.exec.bind(this));
+    this.pipeExec(this.exec.bind(this), this.config.concurrency);
 };
 HttpPort.prototype.exec = function exec(msg, callback) {
     var url = '';
@@ -74,8 +74,8 @@ HttpPort.prototype.exec = function exec(msg, callback) {
                 httpStatus: response.statusCode,
                 payload: body
             };
-            if(response.statusCode != 200){
-                self.log && self.log.error && self.log.error('Http client request error! body: ' + body + ', statusCode: ' + response.statusCode+', statusMessage: ' + response.statusMessage);
+            if (response.statusCode != 200) {
+                self.log && self.log.error && self.log.error('Http client request error! body: ' + body + ', statusCode: ' + response.statusCode + ', statusMessage: ' + response.statusMessage);
                 return callback({'$$':{'mtid':'error', 'errorCode': response.statusCode,
                     'errorMessage': 'Http client: Remote server encountered an error processing the request!'
                 }});
