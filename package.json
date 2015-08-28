@@ -12,5 +12,8 @@
   "repository": {
     "type": "git",
     "url": "git@git.softwaregroup-bg.com:ut5/ut-port-http.git"
+  },
+  "browser": {
+    "request":"browser-request"
   }
 }

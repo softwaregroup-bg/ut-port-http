@@ -1,6 +1,5 @@
 var Port = require('ut-bus/port');
 var util = require('util');
-var fs = require('fs');
 var errors = require('./errors.js');
 var request = require('request');
 var xml2js = require('xml2js');
