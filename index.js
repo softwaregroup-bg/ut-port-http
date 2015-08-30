@@ -32,8 +32,7 @@ HttpPort.prototype.start = function start(callback) {
 HttpPort.prototype.exec = function exec(msg, callback) {
     var url = '';
     var self = this;
-    var headers = msg.headers || this.config.headers || {};
-    headers['User-Agent'] = headers['User-Agent'] || 'Software Group UT-Route 5';
+    var headers = _.assign({}, this.config.headers, msg.headers);
     var parseResponse = true;
     if (this.config.parseResponse === false) {
         parseResponse = false;
