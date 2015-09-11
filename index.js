@@ -1,7 +1,7 @@
 var Port = require('ut-bus/port');
 var util = require('util');
 var errors = require('./errors.js');
-var request = require('request').defaults({jar:true});
+var request = (process.type === 'renderer') ? require('browser-request').defaults({jar:true}) : require('request').defaults({jar:true});
 var xml2js = require('xml2js');
 var when = require('when');
 var _ = require('lodash');
@@ -54,7 +54,8 @@ HttpPort.prototype.exec = function exec(msg, callback) {
         'url': url,
         'timeout': msg.requestTimeout || this.config.requestTimeout || 30000,
         'headers': headers,
-        'body': msg.payload
+        'body': msg.payload,
+        'json': true
     };
     //if there is a raw config propery it will be merged with `connProps`
     if (this.config.raw) {
