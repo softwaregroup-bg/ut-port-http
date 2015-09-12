@@ -4,16 +4,16 @@
   "dependencies": {
     "errno": "^0.1.2",
     "lodash": "^3.10.1",
-    "request": "~2.58.0"
+    "request": "~2.58.0",
     "when": "~3.7.2",
     "xml2js": "^0.4.10"
   },
   "peerDependencies":{
-    "ut-bus": "~5.2.0",
+    "ut-bus": "~5.2.0"
   },
   "publishConfig": {
     "registry": "http://npm.softwaregroup-bg.com:5001"
-  }
+  },
   "description": "UT port http module",
   "repository": {
     "type": "git",
