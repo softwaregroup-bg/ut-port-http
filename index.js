@@ -23,6 +23,7 @@ util.inherits(HttpPort, Port);
 
 HttpPort.prototype.init = function init() {
     Port.prototype.init.apply(this, arguments);
+    this.latency = this.counter && this.counter('average', 'lt', 'Latency');
 };
 
 HttpPort.prototype.start = function start(callback) {
