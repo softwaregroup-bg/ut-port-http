@@ -1,6 +1,6 @@
 {
   "name": "ut-port-http",
-  "description": "UT port http module",
+  "description": "UT port http module.",
   "version": "5.2.0",
   "browser": {
     "request":"browser-request",
