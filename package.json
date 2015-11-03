@@ -1,17 +1,17 @@
 {
   "name": "ut-port-http",
   "description": "UT port http module.",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "browser": {
-    "request":"browser-request",
-    "timers":"timers-browserify"
+    "request": "browser-request",
+    "timers": "timers-browserify"
   },
   "dependencies": {
-    "browser-request":"^0.3.3",
+    "browser-request": "^0.3.3",
     "errno": "^0.1.2",
     "lodash": "^3.10.1",
     "request": "~2.64.0",
-    "timers-browserify":"^1.4.1",
+    "timers-browserify": "^1.4.1",
     "when": "~3.7.2",
     "xml2js": "0.4.10"
   },
