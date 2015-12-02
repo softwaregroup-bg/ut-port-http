@@ -44,7 +44,7 @@ HttpPort.prototype.exec = function exec(msg) {
     }
 
     return when.promise(function(resolve, reject) {
-        //check for required params
+        // check for required params
         if (!(url = msg.url || self.config.url)) {
             reject(errors.configPropMustBeSet('url should be set'));
             return;
@@ -60,17 +60,17 @@ HttpPort.prototype.exec = function exec(msg) {
             'headers': headers,
             'body': msg.payload
         };
-        //if there is a raw config propery it will be merged with `connProps`
+        // if there is a raw config propery it will be merged with `connProps`
         if (self.config.raw) {
             assign(connProps, self.config.raw);
         }
 
-        //do the connection + request
+        // do the connection + request
         request(connProps, function cbresp(error, response, body) {
-            if (error) {//return error if any
+            if (error) { // return error if any
                 reject(errors.http(error));
             } else {
-                //prepare response
+                // prepare response
                 $meta.mtid = 'response';
                 var correctResponse = {
                     headers: response.headers,
@@ -84,12 +84,12 @@ HttpPort.prototype.exec = function exec(msg) {
                     e = errors.http(response);
                     e.code = response.statusCode;
                     reject(e);
-                } else if (!body || body === '') {//if response is empty
+                } else if (!body || body === '') { // if response is empty
                     correctResponse.payload = ((parseResponse) ? {} : body);
                     resolve(correctResponse);
                 } else {
-                    //todo is this really necessarry, probably is provided by request module already
-                    //parse the response if allowed
+                    // todo is this really necessarry, probably is provided by request module already
+                    // parse the response if allowed
                     if (parseResponse) {
                         if (!response.headers['content-type']) {
                             reject(errors.missingContentType());
