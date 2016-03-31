@@ -7,13 +7,12 @@
     "timers": "timers-browserify"
   },
   "dependencies": {
-    "browser-request": "^0.3.3",
-    "errno": "^0.1.2",
+    "browser-request": "0.3.3",
     "lodash": "3.10.1",
-    "request": "~2.64.0",
-    "timers-browserify": "^1.4.1",
+    "request": "2.64.0",
+    "timers-browserify": "1.4.1",
     "ut-error": "~5.3.6",
-    "when": "~3.7.2",
+    "when": "3.7.7",
     "xml2js": "0.4.10"
   },
   "devDependencies": {
