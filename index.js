@@ -33,7 +33,6 @@ HttpPort.prototype.start = function start(callback) {
 HttpPort.prototype.exec = function exec(msg) {
     var $meta = (arguments.length > 1 && arguments[arguments.length - 1]);
     var url = '';
-    var self = this;
     var headers = assign({}, this.config.headers, msg.headers);
     var parseResponse = true;
     if (this.config.parseResponse === false) {
@@ -43,30 +42,30 @@ HttpPort.prototype.exec = function exec(msg) {
         parseResponse = false;
     }
 
-    return when.promise(function(resolve, reject) {
+    return when.promise((resolve, reject) => {
         // check for required params
-        if (!(url = msg.url || self.config.url)) {
+        if (!(url = msg.url || this.config.url)) {
             reject(errors.configPropMustBeSet('url should be set'));
             return;
         } else {
-            url = url + (msg.uri || self.config.uri || '');
+            url = url + (msg.uri || this.config.uri || '');
         }
 
         var connProps = {
             'followRedirect': false,
-            'method': msg.httpMethod || self.config.method,
+            'method': msg.httpMethod || this.config.method,
             'url': url,
-            'timeout': msg.requestTimeout || self.config.requestTimeout || 30000,
+            'timeout': msg.requestTimeout || this.config.requestTimeout || 30000,
             'headers': headers,
             'body': msg.payload
         };
         // if there is a raw config propery it will be merged with `connProps`
-        if (self.config.raw) {
-            assign(connProps, self.config.raw);
+        if (this.config.raw) {
+            assign(connProps, this.config.raw);
         }
 
         // do the connection + request
-        request(connProps, function cbresp(error, response, body) {
+        request(connProps, (error, response, body) => {
             if (error) { // return error if any
                 reject(errors.http(error));
             } else {
@@ -74,11 +73,13 @@ HttpPort.prototype.exec = function exec(msg) {
                 $meta.mtid = 'response';
                 var correctResponse = {
                     headers: response.headers,
+                    requestHeaders: headers,
                     httpStatus: response.statusCode,
+                    requestBody: msg.payload,
                     payload: body
                 };
                 if (response.statusCode !== 200) {
-                    self.log && self.log.error && self.log.error('Http client request error! body: ' + body + ', statusCode: ' +
+                    this.log && this.log.error && this.log.error('Http client request error! body: ' + body + ', statusCode: ' +
                         response.statusCode + ', statusMessage: ' + response.statusMessage);
                     var e;
                     e = errors.http(response);
@@ -103,16 +104,9 @@ HttpPort.prototype.exec = function exec(msg) {
                                         resolve(correctResponse);
                                     }
                                 });
-                            } else if (response.headers['content-type'].indexOf('application/json') !== -1) {
-                                try {
-                                    correctResponse.payload = JSON.parse(body);
-                                } catch (err) {
-                                    reject(errors.jsonParser(err));
-                                    return;
-                                }
-                                resolve(correctResponse);
                             } else {
-                                reject(errors.parserNotFound('No parser found to parse response of type: ' + response.headers['content-type']));
+                                correctResponse.payload = body;
+                                resolve(correctResponse);
                             }
                         }
                     } else {
