@@ -73,9 +73,7 @@ HttpPort.prototype.exec = function exec(msg) {
                 $meta.mtid = 'response';
                 var correctResponse = {
                     headers: response.headers,
-                    requestHeaders: headers,
                     httpStatus: response.statusCode,
-                    requestBody: msg.payload,
                     payload: body
                 };
                 if (response.statusCode !== 200) {
