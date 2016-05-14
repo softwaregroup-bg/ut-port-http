@@ -1,3 +1,14 @@
+<a name="6.0.1"></a>
+## [6.0.1](https://git.softwaregroup-bg.com/ut5/ut-port-http/compare/v5.3.10...v6.0.1) (2016-05-14)
+
+
+### Bug Fixes
+
+* **clean:** logic cleanup, also added request headers and body to the response object ([f8b144d](https://git.softwaregroup-bg.com/ut5/ut-port-http/commit/f8b144d))
+* **headers:** removed request headers ([ae0864a](https://git.softwaregroup-bg.com/ut5/ut-port-http/commit/ae0864a))
+
+
+
 <a name="5.3.10"></a>
 ## [5.3.10](https://git.softwaregroup-bg.com/ut5/ut-port-http/compare/v5.3.9...v5.3.10) (2016-04-15)
 
