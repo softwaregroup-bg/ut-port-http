@@ -4,7 +4,7 @@ var errors = require('./errors.js');
 var request = (process.type === 'renderer') ? require('browser-request') : require('request');
 var xml2js = require('xml2js');
 var when = require('when');
-var assign = require('lodash/object/assign');
+var assign = require('lodash.assign');
 
 function HttpPort() {
     Port.call(this);
