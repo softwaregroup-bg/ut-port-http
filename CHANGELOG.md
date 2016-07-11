@@ -1,3 +1,13 @@
+<a name="6.1.1"></a>
+## [6.1.1](https://git.softwaregroup-bg.com/ut5/ut-port-http/compare/v6.0.3...v6.1.1) (2016-07-11)
+
+
+### Features
+
+* upgrade dependencies ([ed9f448](https://git.softwaregroup-bg.com/ut5/ut-port-http/commit/ed9f448))
+
+
+
 <a name="6.0.3"></a>
 ## [6.0.3](https://git.softwaregroup-bg.com/ut5/ut-port-http/compare/v6.0.2...v6.0.3) (2016-06-16)
 
