@@ -10,8 +10,8 @@ var Config = create('Config', PortHTTP, 'Configuration error');
 var ConfigPropMustBeSet = create('ConfigPropMustBeSet', Config, 'Configuration property should be set');
 
 module.exports = {
-    http: function(cause) {
-        return new PortHTTP(cause);
+    http: function(response) {
+        return new PortHTTP({statusCode: response.statusCode, statusMessage: response.statusMessage, debug: response.body && response.body.debug});
     },
     parser: function(cause) {
         return new Parser(cause);
