@@ -1,3 +1,13 @@
+<a name="6.1.3"></a>
+## [6.1.3](https://git.softwaregroup-bg.com/ut5/ut-port-http/compare/v6.1.2...v6.1.3) (2016-08-08)
+
+
+### Bug Fixes
+
+* do not throw the whole response as cause ([9295bfc](https://git.softwaregroup-bg.com/ut5/ut-port-http/commit/9295bfc))
+
+
+
 <a name="6.1.2"></a>
 ## [6.1.2](https://git.softwaregroup-bg.com/ut5/ut-port-http/compare/v6.1.1...v6.1.2) (2016-07-22)
 
