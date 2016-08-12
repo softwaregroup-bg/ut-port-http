@@ -1,3 +1,13 @@
+<a name="6.1.4"></a>
+## [6.1.4](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.1.3...v6.1.4) (2016-08-12)
+
+
+### Bug Fixes
+
+* publish to npm ([f27c0dc](https://github.com/softwaregroup-bg/ut-port-http/commit/f27c0dc))
+
+
+
 <a name="6.1.3"></a>
 ## [6.1.3](https://git.softwaregroup-bg.com/ut5/ut-port-http/compare/v6.1.2...v6.1.3) (2016-08-08)
 
