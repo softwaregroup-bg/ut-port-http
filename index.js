@@ -32,6 +32,19 @@ HttpPort.prototype.start = function start(callback) {
 };
 HttpPort.prototype.exec = function exec(msg) {
     var $meta = (arguments.length > 1 && arguments[arguments.length - 1]);
+
+    var methodName = ($meta && $meta.method);
+    if (methodName) {
+        var method = this.config[methodName];
+        if (!method) {
+            methodName = methodName.split('/', 2);
+            method = methodName.length === 2 && this.config[methodName[1]];
+        }
+        if (method instanceof Function) {
+            return when.lift(method).apply(this, Array.prototype.slice.call(arguments));
+        }
+    }
+
     var url = '';
     var headers = assign({}, this.config.headers, msg.headers);
     var parseResponse = true;
