@@ -66,6 +66,7 @@ HttpPort.prototype.exec = function exec(msg) {
 
         var connProps = {
             'followRedirect': false,
+            'qs': msg.qs,
             'method': msg.httpMethod || this.config.method,
             'url': url,
             'timeout': msg.requestTimeout || this.config.requestTimeout || 30000,
