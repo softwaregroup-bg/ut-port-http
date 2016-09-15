@@ -1,3 +1,13 @@
+<a name="6.3.0"></a>
+# [6.3.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.2.0...v6.3.0) (2016-09-15)
+
+
+### Features
+
+* possibility to pass querystring object ([0edc885](https://github.com/softwaregroup-bg/ut-port-http/commit/0edc885))
+
+
+
 <a name="6.2.0"></a>
 # [6.2.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.1.4...v6.2.0) (2016-08-26)
 
