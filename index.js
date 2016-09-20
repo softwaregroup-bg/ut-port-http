@@ -90,7 +90,7 @@ HttpPort.prototype.exec = function exec(msg) {
                     httpStatus: response.statusCode,
                     payload: body
                 };
-                if (response.statusCode !== 200) {
+                if (response.statusCode < 200 && response.statusCode >= 300) {
                     this.log && this.log.error && this.log.error('Http client request error! body: ' + body + ', statusCode: ' +
                         response.statusCode + ', statusMessage: ' + response.statusMessage);
                     var e;
