@@ -1,3 +1,13 @@
+<a name="6.3.2"></a>
+## [6.3.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.1...v6.3.2) (2016-09-21)
+
+
+### Bug Fixes
+
+* do not return error if status code is between success codes (2xx) ([0950e1f](https://github.com/softwaregroup-bg/ut-port-http/commit/0950e1f))
+
+
+
 <a name="6.3.1"></a>
 ## [6.3.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.0...v6.3.1) (2016-09-20)
 
