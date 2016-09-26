@@ -1,3 +1,13 @@
+<a name="6.3.6"></a>
+## [6.3.6](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.5...v6.3.6) (2016-09-26)
+
+
+### Bug Fixes
+
+* distinguish between errors and responses ([2632783](https://github.com/softwaregroup-bg/ut-port-http/commit/2632783))
+
+
+
 <a name="6.3.5"></a>
 ## [6.3.5](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.4...v6.3.5) (2016-09-21)
 
