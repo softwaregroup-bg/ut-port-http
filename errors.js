@@ -1,6 +1,7 @@
 var create = require('ut-error').define;
 
-var PortHTTP = create('PortHTTP', undefined, 'HTTP error');
+var PortHTTP = create('PortHTTP');
+var Generic = create('Generic', PortHTTP);
 var Parser = create('Parser', PortHTTP, 'Parser Error');
 var MissingContentType = create('MissingContentType', Parser, 'Server returned no content type');
 var XmlParser = create('XmlParser', Parser, 'XML Parser Error');
@@ -11,7 +12,11 @@ var ConfigPropMustBeSet = create('ConfigPropMustBeSet', Config, 'Configuration p
 
 module.exports = {
     http: function(response) {
-        return new PortHTTP({statusCode: response.statusCode, statusMessage: response.statusMessage, debug: response.body && response.body.debug});
+        if (response instanceof Error) {
+            return new Generic(response);
+        } else {
+            return new PortHTTP({message: 'HTTP error', statusCode: response.statusCode, statusMessage: response.statusMessage, debug: response.body && response.body.debug});
+        }
     },
     parser: function(cause) {
         return new Parser(cause);
