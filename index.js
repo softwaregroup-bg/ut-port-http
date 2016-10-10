@@ -27,8 +27,12 @@ HttpPort.prototype.init = function init() {
 };
 
 HttpPort.prototype.start = function start(callback) {
-    Port.prototype.start.apply(this, arguments);
-    this.pipeExec(this.exec.bind(this), this.config.concurrency);
+    this.bus.importMethods(this.config, this.config.imports, {request: true, response: true}, this);
+    return Port.prototype.start.apply(this, Array.prototype.slice.call(arguments))
+        .then((result) => {
+            this.pipeExec(this.exec.bind(this), this.config.concurrency);
+            return result;
+        });
 };
 HttpPort.prototype.exec = function exec(msg) {
     var $meta = (arguments.length > 1 && arguments[arguments.length - 1]);
