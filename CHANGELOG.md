@@ -1,3 +1,13 @@
+<a name="6.3.8"></a>
+## [6.3.8](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.7...v6.3.8) (2016-10-11)
+
+
+### Bug Fixes
+
+* upgrade dependencies ([9302c61](https://github.com/softwaregroup-bg/ut-port-http/commit/9302c61))
+
+
+
 <a name="6.3.7"></a>
 ## [6.3.7](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.6...v6.3.7) (2016-10-11)
 
