@@ -1,3 +1,13 @@
+<a name="6.3.7"></a>
+## [6.3.7](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.6...v6.3.7) (2016-10-11)
+
+
+### Bug Fixes
+
+* import methods on start ([a8a78a4](https://github.com/softwaregroup-bg/ut-port-http/commit/a8a78a4))
+
+
+
 <a name="6.3.6"></a>
 ## [6.3.6](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.5...v6.3.6) (2016-09-26)
 
