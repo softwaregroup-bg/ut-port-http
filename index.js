@@ -77,15 +77,21 @@ HttpPort.prototype.exec = function exec(msg) {
             'headers': headers,
             'body': msg.payload
         };
-        // if there is a raw config propery it will be merged with `connProps`
+        // if there is a raw config property it will be merged with `connProps`
         if (this.config.raw) {
-            assign(connProps, this.config.raw);
+            connProps = Object.keys(this.config.raw).reduce((prev, cur) => {
+                prev[cur] = this.config.raw[cur];
+                return prev;
+            }, connProps);
         }
 
         // do the connection + request
         request(connProps, (error, response, body) => {
             if (error) { // return error if any
-                reject(errors.http(error));
+                if (!response.statusCode) {
+                    return reject(errors.connection());
+                }
+                return reject(errors.http(error));
             } else {
                 // prepare response
                 $meta.mtid = 'response';

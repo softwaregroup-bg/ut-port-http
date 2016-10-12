@@ -2,6 +2,7 @@ var create = require('ut-error').define;
 
 var PortHTTP = create('PortHTTP');
 var Generic = create('Generic', PortHTTP);
+var Connection = create('Connection', PortHTTP);
 var Parser = create('Parser', PortHTTP, 'Parser Error');
 var MissingContentType = create('MissingContentType', Parser, 'Server returned no content type');
 var XmlParser = create('XmlParser', Parser, 'XML Parser Error');
@@ -35,6 +36,9 @@ module.exports = {
     },
     config: function(cause) {
         return new Config(cause);
+    },
+    connection: function(cause) {
+        return new Connection('Connection error');
     },
     configPropMustBeSet: function(cause) {
         return new ConfigPropMustBeSet(cause);
