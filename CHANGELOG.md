@@ -1,3 +1,14 @@
+<a name="6.3.12"></a>
+## [6.3.12](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.11...v6.3.12) (2016-11-04)
+
+
+### Bug Fixes
+
+* cleanup ([c53babc](https://github.com/softwaregroup-bg/ut-port-http/commit/c53babc))
+* handle validation errors ([10c3394](https://github.com/softwaregroup-bg/ut-port-http/commit/10c3394))
+
+
+
 <a name="6.3.11"></a>
 ## [6.3.11](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.10...v6.3.11) (2016-10-24)
 
