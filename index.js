@@ -77,7 +77,7 @@ HttpPort.prototype.exec = function exec(msg) {
             'headers': headers,
             'body': msg.payload
         };
-        // if there is a raw config propery it will be merged with `connProps`
+        // if there is a raw config property it will be merged with `connProps`
         if (this.config.raw) {
             assign(connProps, this.config.raw);
         }
@@ -105,7 +105,7 @@ HttpPort.prototype.exec = function exec(msg) {
                     correctResponse.payload = ((parseResponse) ? {} : body);
                     resolve(correctResponse);
                 } else {
-                    // todo is this really necessarry, probably is provided by request module already
+                    // todo is this really necessarily, probably is provided by request module already
                     // parse the response if allowed
                     if (parseResponse) {
                         if (!response.headers['content-type']) {
