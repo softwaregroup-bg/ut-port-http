@@ -15,7 +15,16 @@ module.exports = {
         if (response instanceof Error) {
             return new Generic(response);
         } else {
-            return new PortHTTP({message: 'HTTP error', statusCode: response.statusCode, statusMessage: response.statusMessage, debug: response.body && response.body.debug});
+            var resp;
+            var message = 'HTTP error';
+            var statusMessage = response.statusMessage || response.statusText;
+            try {
+                resp = JSON.parse(response.response);
+            } catch (e) {}
+            if (resp.validation) {
+                message = resp.message;
+            }
+            return new PortHTTP({message: message, statusCode: response.statusCode, statusMessage: statusMessage, debug: response.body && response.body.debug});
         }
     },
     parser: function(cause) {
