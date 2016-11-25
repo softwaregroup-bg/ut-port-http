@@ -1,3 +1,13 @@
+<a name="6.3.14"></a>
+## [6.3.14](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.13...v6.3.14) (2016-11-25)
+
+
+### Bug Fixes
+
+* error creation ([d6ea9cd](https://github.com/softwaregroup-bg/ut-port-http/commit/d6ea9cd))
+
+
+
 <a name="6.3.13"></a>
 ## [6.3.13](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.12...v6.3.13) (2016-11-23)
 
