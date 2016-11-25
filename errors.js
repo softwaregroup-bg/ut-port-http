@@ -17,7 +17,7 @@ module.exports = {
             return new Generic(response);
         } else {
             return new PortHTTP({
-                message: 'HTTP error',
+                message: response.body && response.body.message || 'HTTP error',
                 statusCode: response.statusCode,
                 statusMessage: response.statusText,
                 validation: response.body && response.body.validation,
