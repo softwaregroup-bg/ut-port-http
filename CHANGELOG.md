@@ -1,3 +1,13 @@
+<a name="6.3.15"></a>
+## [6.3.15](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.14...v6.3.15) (2016-12-15)
+
+
+### Bug Fixes
+
+* deps versions bump ([7325045](https://github.com/softwaregroup-bg/ut-port-http/commit/7325045))
+
+
+
 <a name="6.3.14"></a>
 ## [6.3.14](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.13...v6.3.14) (2016-11-25)
 
