@@ -1,3 +1,13 @@
+<a name="6.4.0"></a>
+# [6.4.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.15...v6.4.0) (2016-12-23)
+
+
+### Features
+
+* update dependencies ([78ae1ab](https://github.com/softwaregroup-bg/ut-port-http/commit/78ae1ab))
+
+
+
 <a name="6.3.15"></a>
 ## [6.3.15](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.14...v6.3.15) (2016-12-15)
 
