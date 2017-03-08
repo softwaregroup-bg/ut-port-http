@@ -1,3 +1,13 @@
+<a name="6.4.1"></a>
+## [6.4.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.4.0...v6.4.1) (2017-03-08)
+
+
+### Bug Fixes
+
+* dependencies ([894a247](https://github.com/softwaregroup-bg/ut-port-http/commit/894a247))
+
+
+
 <a name="6.4.0"></a>
 # [6.4.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.3.15...v6.4.0) (2016-12-23)
 
