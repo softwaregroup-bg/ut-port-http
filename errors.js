@@ -1,8 +1,7 @@
 var create = require('ut-error').define;
 
 var PortHTTP = create('PortHTTP');
-var Generic = create('Generic',
-PortHTTP);
+var Generic = create('Generic', PortHTTP);
 var Parser = create('Parser', PortHTTP, 'Parser Error');
 var MissingContentType = create('MissingContentType', Parser, 'Server returned no content type');
 var XmlParser = create('XmlParser', Parser, 'XML Parser Error');
@@ -16,9 +15,17 @@ module.exports = {
         if (response instanceof Error) {
             return new Generic(response);
         } else {
+            var params;
+            try {
+                params = JSON.parse(response.request.body).params;
+            } catch (e) {
+                params = {};
+            }
+
             return new PortHTTP({
                 message: response.body && response.body.message || 'HTTP error',
                 statusCode: response.statusCode,
+                params,
                 statusMessage: response.statusText,
                 validation: response.body && response.body.validation,
                 debug: response.body && response.body.debug
