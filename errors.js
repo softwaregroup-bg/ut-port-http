@@ -23,7 +23,7 @@ module.exports = {
             }
 
             return new PortHTTP({
-                message: response.body && response.body.message || 'HTTP error',
+                message: (response.body && response.body.message) || 'HTTP error',
                 statusCode: response.statusCode,
                 params,
                 statusMessage: response.statusText,
