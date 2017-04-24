@@ -1,3 +1,8 @@
+<a name="6.4.2"></a>
+## [6.4.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.4.1...v6.4.2) (2017-04-24)
+
+
+
 <a name="6.4.1"></a>
 ## [6.4.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.4.0...v6.4.1) (2017-03-08)
 
