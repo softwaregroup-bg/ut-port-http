@@ -1,3 +1,13 @@
+<a name="6.4.3"></a>
+## [6.4.3](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.4.2...v6.4.3) (2017-05-04)
+
+
+### Bug Fixes
+
+* lint errors ([05d4ed8](https://github.com/softwaregroup-bg/ut-port-http/commit/05d4ed8))
+
+
+
 <a name="6.4.2"></a>
 ## [6.4.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.4.1...v6.4.2) (2017-04-24)
 
