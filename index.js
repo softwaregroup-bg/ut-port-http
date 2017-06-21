@@ -120,6 +120,14 @@ HttpPort.prototype.exec = function exec(msg) {
                                         resolve(correctResponse);
                                     }
                                 });
+                            } else if (response.headers['content-type'].indexOf('application/json') !== -1) {
+                                try {
+                                    var jsonParsedBody = JSON.parse(body);
+                                    correctResponse.payload = jsonParsedBody;
+                                    resolve(correctResponse);
+                                } catch (err) {
+                                    reject(errors.jsonParser(err));
+                                }
                             } else {
                                 correctResponse.payload = body;
                                 resolve(correctResponse);
