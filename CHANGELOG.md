@@ -1,3 +1,13 @@
+<a name="6.5.0"></a>
+# [6.5.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.4.9...v6.5.0) (2017-07-07)
+
+
+### Features
+
+* added body to response ([b642eef](https://github.com/softwaregroup-bg/ut-port-http/commit/b642eef))
+
+
+
 <a name="6.4.9"></a>
 ## [6.4.9](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.4.8...v6.4.9) (2017-05-22)
 
