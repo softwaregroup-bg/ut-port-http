@@ -85,7 +85,7 @@ HttpPort.prototype.exec = function exec(msg) {
         }
 
         // do the connection + request
-        request(connProps, (error, response, body) => {
+        var r = request(connProps, (error, response, body) => {
             if (error) { // return error if any
                 reject(errors.http(error));
             } else {
@@ -133,8 +133,8 @@ HttpPort.prototype.exec = function exec(msg) {
                     }
                 }
             }
-        })
-        .on('request', req => {
+        });
+        (typeof r.on === 'function') && r.on('request', req => {
             let start = 0;
             req.on('socket', socket => {
                 start = socket.bytesWritten;
