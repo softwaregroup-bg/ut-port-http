@@ -8,18 +8,14 @@
   },
   "dependencies": {
     "browser-request": "0.3.3",
-    "lodash.assign": "4.2.0",
-    "request": "2.79.0",
-    "timers-browserify": "2.0.2",
-    "ut-error": "^5.4.0",
-    "when": "3.7.7",
-    "xml2js": "0.4.17"
+    "lodash.merge": "4.6.0",
+    "request": "2.83.0",
+    "timers-browserify": "2.0.4",
+    "ut-error": "^5.4.9",
+    "xml2js": "0.4.19"
   },
   "devDependencies": {
-    "ut-tools": "^5.13.5"
-  },
-  "peerDependencies": {
-    "ut-bus": "^5.9.0"
+    "ut-tools": "^5.23.2"
   },
   "scripts": {
     "lint": "ut-lint .",
