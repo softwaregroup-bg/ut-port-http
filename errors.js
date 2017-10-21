@@ -1,3 +1,4 @@
+'use strict';
 const create = require('ut-error').define;
 const PortHTTP = create('PortHTTP');
 const Generic = create('Generic', PortHTTP);
