@@ -1,8 +1,8 @@
 'use strict';
 const create = require('ut-error').define;
-const PortHTTP = create('PortHTTP');
-const Generic = create('Generic', PortHTTP);
-const Parser = create('Parser', PortHTTP, 'Parser Error');
+const PortHTTP = create('portHTTP');
+const Generic = create('generic', PortHTTP);
+const Parser = create('parser', PortHTTP, 'Parser Error');
 
 module.exports = {
     http: function(response) {
