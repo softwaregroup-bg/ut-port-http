@@ -24,6 +24,8 @@ util.inherits(HttpPort, Port);
 HttpPort.prototype.init = function init() {
     Port.prototype.init.apply(this, arguments);
     this.latency = this.counter && this.counter('average', 'lt', 'Latency');
+    this.bytesSent = this.counter && this.counter('counter', 'bs', 'Bytes sent', 300);
+    this.bytesReceived = this.counter && this.counter('counter', 'br', 'Bytes received', 300);
 };
 
 HttpPort.prototype.start = function start(callback) {
@@ -83,7 +85,7 @@ HttpPort.prototype.exec = function exec(msg) {
         }
 
         // do the connection + request
-        request(connProps, (error, response, body) => {
+        var r = request(connProps, (error, response, body) => {
             if (error) { // return error if any
                 reject(errors.http(error));
             } else {
@@ -131,6 +133,18 @@ HttpPort.prototype.exec = function exec(msg) {
                     }
                 }
             }
+        });
+        (typeof r.on === 'function') && r.on('request', req => {
+            let start = 0;
+            req.on('socket', socket => {
+                start = socket.bytesWritten;
+                socket.on('data', data => {
+                    this.bytesReceived && this.bytesReceived(data.length);
+                });
+            });
+            req.on('response', resp => {
+                this.bytesSent && req.socket && this.bytesSent(req.socket.bytesWritten - start);
+            });
         });
     });
 };
