@@ -139,7 +139,7 @@ module.exports = function({parent}) {
             (typeof req.on === 'function') && req.on('request', req => {
                 let start = 0;
                 req.on('socket', socket => {
-                    start = socket.bytesWritten;
+                    start = (socket.hasOwnProperty('bytesWritten') && socket.bytesWritten) || 0;
                     socket.on('data', data => {
                         this.bytesReceived && this.bytesReceived(data.length);
                     });
