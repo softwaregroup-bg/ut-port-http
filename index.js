@@ -137,10 +137,19 @@ HttpPort.prototype.exec = function exec(msg) {
         (typeof r.on === 'function') && r.on('request', req => {
             let start = 0;
             req.on('socket', socket => {
-                start = socket.bytesWritten;
-                socket.on('data', data => {
-                    this.bytesReceived && this.bytesReceived(data.length);
-                });
+                try {
+                    start = socket.bytesWritten;
+                    socket.on('data', data => {
+                        this.bytesReceived && this.bytesReceived(data.length);
+                    });
+                } catch (error) {
+                    // eslint-disable-next-line no-console
+                    console.error(error);
+                }
+            });
+            req.on('error', error => {
+                // eslint-disable-next-line no-console
+                console.error(error);
             });
             req.on('response', resp => {
                 this.bytesSent && req.socket && this.bytesSent(req.socket.bytesWritten - start);
