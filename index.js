@@ -1,22 +1,23 @@
 'use strict';
 const merge = require('lodash.merge');
 const util = require('util');
-const errors = require('./errors');
 const request = (process.type === 'renderer') ? require('browser-request') : require('request');
 const xml2js = require('xml2js');
+let errors;
 
 module.exports = function({parent}) {
     function HttpPort({config}) {
         parent && parent.apply(this, arguments);
         this.config = merge({
             id: null,
-            logLevel: '',
+            logLevel: 'info',
             type: 'http',
             url: false,
             method: 'get',
             uri: '/',
             headers: {}
         }, config);
+        errors = errors || require('./errors')(this.defineError);
     }
 
     if (parent) {
