@@ -73,7 +73,7 @@ module.exports = function({parent}) {
                 url = url + (msg.uri || this.config.uri || '');
             }
 
-            let connProps = {
+            let reqProps = {
                 'followRedirect': false,
                 'qs': msg.qs,
                 'method': msg.httpMethod || this.config.method,
@@ -82,14 +82,19 @@ module.exports = function({parent}) {
                 'headers': headers,
                 'body': msg.payload
             };
-            // if there is a raw config property it will be merged with `connProps`
+            // if there is a raw config property it will be merged with `reqProps`
             if (this.config.raw) {
-                Object.assign(connProps, this.config.raw);
+                Object.assign(reqProps, this.config.raw);
             }
 
             // do the connection + request
-            let req = request(connProps, (error, response, body) => {
+            let req = request(reqProps, (error, response, body) => {
                 if (error) { // return error if any
+                    if (this.bus.config.debug) {
+                        error.request = reqProps;
+                    } else {
+                        error.request = {method: reqProps.body && reqProps.body.method};
+                    }
                     reject(errors.http(error));
                 } else {
                     // prepare response
