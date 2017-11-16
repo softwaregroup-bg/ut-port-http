@@ -90,7 +90,11 @@ module.exports = function({parent}) {
             // do the connection + request
             let req = request(reqProps, (error, response, body) => {
                 if (error) { // return error if any
-                    error.request = reqProps;
+                    if (this.bus.config.debug) {
+                        error.request = reqProps;
+                    } else {
+                        error.request = {method: reqProps.body && reqProps.body.method};
+                    }
                     reject(errors.http(error));
                 } else {
                     // prepare response
