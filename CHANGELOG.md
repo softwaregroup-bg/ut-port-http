@@ -1,3 +1,13 @@
+<a name="7.0.0"></a>
+# [7.0.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.6.0...v7.0.0) (2017-12-06)
+
+
+### Bug Fixes
+
+* decouple from ut-bus ([5f2beee](https://github.com/softwaregroup-bg/ut-port-http/commit/5f2beee))
+
+
+
 <a name="6.6.0"></a>
 # [6.6.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v6.5.0...v6.6.0) (2017-10-25)
 
