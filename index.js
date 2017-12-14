@@ -95,7 +95,20 @@ module.exports = function({parent}) {
                     } else {
                         error.request = {method: reqProps.body && reqProps.body.method};
                     }
-                    reject(errors.http(error));
+                    switch (error.code) {
+                        case 'ECONNREFUSED':
+                            reject(this.errors.notConnected());
+                            break;
+                        case 'EPIPE':
+                        case 'ECONNRESET':
+                            reject(this.errors.disconnectBeforeResponse());
+                            break;
+                        case 'ESOCKETTIMEDOUT':
+                        case 'ETIMEDOUT':
+                            reject(error.connect ? this.errors.notConnected() : this.errors.receiveTimeout());
+                            break;
+                        default: reject(errors.http(error));
+                    }
                 } else {
                     // prepare response
                     $meta.mtid = 'response';
