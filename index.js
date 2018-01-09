@@ -74,13 +74,14 @@ module.exports = function({parent}) {
             }
 
             let reqProps = {
-                'followRedirect': false,
-                'qs': msg.qs,
-                'method': msg.httpMethod || this.config.method,
-                'url': url,
-                'timeout': msg.requestTimeout || this.config.requestTimeout || 30000,
-                'headers': headers,
-                'body': msg.payload
+                followRedirect: false,
+                withCredentials: msg.withCredentials || this.config.withCredentials,
+                qs: msg.qs,
+                method: msg.httpMethod || this.config.method,
+                url: url,
+                timeout: msg.requestTimeout || this.config.requestTimeout || 30000,
+                headers: headers,
+                body: msg.payload
             };
             // if there is a raw config property it will be merged with `reqProps`
             if (this.config.raw) {
