@@ -87,9 +87,10 @@ module.exports = function({parent}) {
             if (this.config.raw) {
                 Object.assign(reqProps, this.config.raw);
             }
-
+            this.log && this.log.debug && this.log.debug(reqProps);
             // do the connection + request
             let req = request(reqProps, (error, response, body) => {
+                this.log && this.log.debug && this.log.debug({error, response, body});
                 if (error) { // return error if any
                     if (this.bus.config.debug) {
                         error.request = reqProps;
