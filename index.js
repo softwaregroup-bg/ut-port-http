@@ -120,12 +120,10 @@ module.exports = function({parent}) {
                         payload: body
                     };
                     if (response.statusCode < 200 || response.statusCode >= 300) {
-                        this.log && this.log.error && this.log.error('Http client request error! body: ' + body + ', statusCode: ' +
-                            response.statusCode + ', statusMessage: ' + response.statusMessage);
-                        let error;
-                        error = errors.http(response);
+                        let error = errors.http(response);
                         error.code = response.statusCode;
                         error.body = response.body;
+                        this.log && this.log.error && this.log.error(error);
                         reject(error);
                     } else if (!body || body === '') { // if response is empty
                         correctResponse.payload = ((parseResponse) ? {} : body);
