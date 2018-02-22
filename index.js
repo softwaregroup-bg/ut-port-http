@@ -81,7 +81,8 @@ module.exports = function({parent}) {
                 url: url,
                 timeout: msg.requestTimeout || this.config.requestTimeout || 30000,
                 headers: headers,
-                body: msg.payload
+                body: msg.payload,
+                requestMessage: msg
             };
             // if there is a raw config property it will be merged with `reqProps`
             if (this.config.raw) {
@@ -117,12 +118,14 @@ module.exports = function({parent}) {
                     let correctResponse = {
                         headers: response.headers,
                         httpStatus: response.statusCode,
+                        request: reqProps,
                         payload: body
                     };
                     if (response.statusCode < 200 || response.statusCode >= 300) {
                         let error = errors.http(response);
                         error.code = response.statusCode;
                         error.body = response.body;
+                        error.request = reqProps;
                         this.log && this.log.error && this.log.error(error);
                         reject(error);
                     } else if (!body || body === '') { // if response is empty
