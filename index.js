@@ -107,7 +107,7 @@ module.exports = function({parent}) {
                             break;
                         case 'ESOCKETTIMEDOUT':
                         case 'ETIMEDOUT':
-                            reject(error.connect ? this.errors.notConnected() : this.errors.receiveTimeout());
+                            reject(error.connect ? this.errors.notConnected() : this.errors.disconnectBeforeResponse());
                             break;
                         default: reject(errors.http(error));
                     }
