@@ -4,6 +4,13 @@ const util = require('util');
 const request = (process.type === 'renderer') ? require('browser-request') : require('request');
 const xml2js = require('xml2js');
 let errors;
+const getTrace = (() => {
+    var traceId = 0;
+    return () => {
+        traceId = (traceId < Number.MAX_SAFE_INTEGER ? traceId : 0);
+        return (traceId += 1);
+    };
+})();
 
 module.exports = function({parent}) {
     function HttpPort({config}) {
@@ -28,6 +35,10 @@ module.exports = function({parent}) {
         parent && parent.prototype.init.apply(this, arguments);
         this.bytesSent = this.counter && this.counter('counter', 'bs', 'Bytes sent', 300);
         this.bytesReceived = this.counter && this.counter('counter', 'br', 'Bytes received', 300);
+        this.beforeEncode = (msg, $meta) => {
+            $meta.trace = getTrace();
+            return [msg, $meta];
+        };
     };
 
     HttpPort.prototype.start = function start(callback) {
@@ -35,12 +46,13 @@ module.exports = function({parent}) {
         return Promise.resolve()
             .then(() => parent.prototype.start.apply(this, Array.prototype.slice.call(arguments)))
             .then(result => {
-                this.pull(this.exec);
+                this.pull(this.exec, {});
                 return result;
             });
     };
     HttpPort.prototype.exec = function exec(msg) {
-        let $meta = (arguments.length > 1 && arguments[arguments.length - 1]);
+        let argLen = arguments.length;
+        let $meta = (argLen > 1 && arguments[argLen - 1]);
 
         let methodName = ($meta && $meta.method);
         if (methodName) {
