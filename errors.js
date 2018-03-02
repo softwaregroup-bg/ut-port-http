@@ -12,7 +12,8 @@ module.exports = create => {
                 return new PortHTTP({
                     message: (response.body && response.body.message) || 'HTTP error',
                     statusCode: response.statusCode,
-                    statusMessage: response.statusText,
+                    statusText: response.statusText,
+                    statusMessage: response.statusMessage,
                     validation: response.body && response.body.validation,
                     debug: response.body && response.body.debug
                 });

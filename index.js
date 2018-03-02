@@ -74,21 +74,23 @@ module.exports = function({parent}) {
             }
 
             let reqProps = {
-                'followRedirect': false,
-                'qs': msg.qs,
-                'method': msg.httpMethod || this.config.method,
-                'url': url,
-                'timeout': msg.requestTimeout || this.config.requestTimeout || 30000,
-                'headers': headers,
-                'body': msg.payload
+                followRedirect: false,
+                withCredentials: msg.withCredentials || this.config.withCredentials,
+                qs: msg.qs,
+                method: msg.httpMethod || this.config.method,
+                url: url,
+                timeout: msg.requestTimeout || this.config.requestTimeout || 30000,
+                headers: headers,
+                body: msg.payload
             };
             // if there is a raw config property it will be merged with `reqProps`
             if (this.config.raw) {
                 Object.assign(reqProps, this.config.raw);
             }
-
+            this.log && this.log.debug && this.log.debug(reqProps);
             // do the connection + request
             let req = request(reqProps, (error, response, body) => {
+                this.log && this.log.debug && this.log.debug({error, response, body});
                 if (error) { // return error if any
                     if (this.bus.config.debug) {
                         error.request = reqProps;
@@ -105,7 +107,7 @@ module.exports = function({parent}) {
                             break;
                         case 'ESOCKETTIMEDOUT':
                         case 'ETIMEDOUT':
-                            reject(error.connect ? this.errors.notConnected() : this.errors.receiveTimeout());
+                            reject(error.connect ? this.errors.notConnected() : this.errors.disconnectBeforeResponse());
                             break;
                         default: reject(errors.http(error));
                     }
@@ -118,12 +120,10 @@ module.exports = function({parent}) {
                         payload: body
                     };
                     if (response.statusCode < 200 || response.statusCode >= 300) {
-                        this.log && this.log.error && this.log.error('Http client request error! body: ' + body + ', statusCode: ' +
-                            response.statusCode + ', statusMessage: ' + response.statusMessage);
-                        let error;
-                        error = errors.http(response);
+                        let error = errors.http(response);
                         error.code = response.statusCode;
                         error.body = response.body;
+                        this.log && this.log.error && this.log.error(error);
                         reject(error);
                     } else if (!body || body === '') { // if response is empty
                         correctResponse.payload = ((parseResponse) ? {} : body);
