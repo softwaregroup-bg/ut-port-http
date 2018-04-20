@@ -3,7 +3,7 @@
   "description": "UT port http module",
   "version": "7.1.0",
   "browser": {
-    "request": "browser-request",
+    "request": "ut-browser-request",
     "timers": "timers-browserify"
   },
   "dependencies": {
