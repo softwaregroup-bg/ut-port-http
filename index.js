@@ -5,16 +5,17 @@ const request = (process.type === 'renderer') ? require('ut-browser-request') : 
 const xml2js = require('xml2js');
 let errors;
 let processDownload = (blob, fileName) => {
-    let url = window.URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.id = 'downloada';
-    document.body.appendChild(a);
-    a.style = 'display: none';
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
+    if (typeof window === 'object') {
+        let url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.style = 'display: none';
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+    }
 };
 module.exports = function({parent}) {
     function HttpPort({config}) {
@@ -66,7 +67,6 @@ module.exports = function({parent}) {
         }
 
         let url = '';
-        let download = msg.download;
         let headers = Object.assign({}, this.config.headers, msg.headers);
         let parseResponse = true;
         if (this.config.parseResponse === false) {
@@ -145,9 +145,9 @@ module.exports = function({parent}) {
                         // process blob type response
                         if (reqProps.blob) {
                             correctResponse.payload = {
-                                result: download || response.body
+                                result: (((response.getResponseHeader('Content-Disposition') || '').split('filename=') || [])[1] || '').replace(/^"|"$/g, '')
                             };
-                            download && processDownload(response.body, download);
+                            processDownload(response.body, correctResponse.payload.result);
                             resolve(correctResponse);
                         }
                         // todo is this really necessarily, probably is provided by request module already
