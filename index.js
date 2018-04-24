@@ -1,10 +1,22 @@
 'use strict';
 const merge = require('lodash.merge');
 const util = require('util');
-const request = (process.type === 'renderer') ? require('browser-request') : require('request');
+const request = (process.type === 'renderer') ? require('ut-browser-request') : require('request');
 const xml2js = require('xml2js');
 let errors;
-
+let processDownload = (blob, fileName) => {
+    if (typeof window === 'object') {
+        let url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.style = 'display: none';
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+    }
+};
 module.exports = function({parent}) {
     function HttpPort({config}) {
         parent && parent.apply(this, arguments);
@@ -81,6 +93,7 @@ module.exports = function({parent}) {
                 url: url,
                 timeout: msg.requestTimeout || this.config.requestTimeout || 30000,
                 headers: headers,
+                blob: msg.blob,
                 body: msg.payload
             };
             // if there is a raw config property it will be merged with `reqProps`
@@ -129,6 +142,14 @@ module.exports = function({parent}) {
                         correctResponse.payload = ((parseResponse) ? {} : body);
                         resolve(correctResponse);
                     } else {
+                        // process blob type response
+                        if (reqProps.blob) {
+                            correctResponse.payload = {
+                                result: (((response.getResponseHeader('Content-Disposition') || '').split('filename=') || [])[1] || '').replace(/^"|"$/g, '')
+                            };
+                            processDownload(response.body, correctResponse.payload.result);
+                            resolve(correctResponse);
+                        }
                         // todo is this really necessarily, probably is provided by request module already
                         // parse the response if allowed
                         if (parseResponse) {
