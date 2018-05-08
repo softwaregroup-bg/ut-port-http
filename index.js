@@ -123,7 +123,29 @@ module.exports = function({parent}) {
                         let error = errors.http(response);
                         error.code = response.statusCode;
                         error.body = response.body;
-                        this.log && this.log.error && this.log.error(error);
+                        let shouldLog = true;
+                        if (msg.disableStatusCodeLog) {
+                            switch (msg.disableStatusCodeLog.constructor.name) {
+                                case 'Number':
+                                    if (msg.disableStatusCodeLog === response.statusCode) {
+                                        shouldLog = false;
+                                    }
+                                    break;
+                                case 'Array':
+                                    if (msg.disableStatusCodeLog.indexOf(response.statusCode) !== -1) {
+                                        shouldLog = false;
+                                    }
+                                    break;
+                                case 'RegExp':
+                                    if (msg.disableStatusCodeLog.test(response.statusCode)) {
+                                        shouldLog = false;
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        shouldLog && this.log && this.log.error && this.log.error(error);
                         reject(error);
                     } else if (!body || body === '') { // if response is empty
                         correctResponse.payload = ((parseResponse) ? {} : body);
