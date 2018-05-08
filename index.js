@@ -3,6 +3,24 @@ const merge = require('lodash.merge');
 const util = require('util');
 const request = (process.type === 'renderer') ? require('browser-request') : require('request');
 const xml2js = require('xml2js');
+const statusCodeError = (msg, resp) => {
+    if (resp.statusCode < 200 || resp.statusCode >= 300) {
+        if (msg.allowedStatusCodes) {
+            if (typeof msg.allowedStatusCodes === 'number') {
+                return msg.allowedStatusCodes !== resp.statusCode;
+            }
+            if (Array.isArray(msg.allowedStatusCodes)) {
+                return msg.allowedStatusCodes.indexOf(resp.statusCode) === -1;
+            }
+            if (msg.allowedStatusCodes instanceof RegExp) {
+                return !msg.allowedStatusCodes.test(resp.statusCode);
+            }
+        }
+        return true;
+    }
+    return false;
+};
+
 let errors;
 
 module.exports = function({parent}) {
@@ -119,33 +137,11 @@ module.exports = function({parent}) {
                         httpStatus: response.statusCode,
                         payload: body
                     };
-                    if (response.statusCode < 200 || response.statusCode >= 300) {
+                    if (statusCodeError(msg, response)) {
                         let error = errors.http(response);
                         error.code = response.statusCode;
                         error.body = response.body;
-                        let shouldLog = true;
-                        if (msg.disableStatusCodeLog) {
-                            switch (msg.disableStatusCodeLog.constructor.name) {
-                                case 'Number':
-                                    if (msg.disableStatusCodeLog === response.statusCode) {
-                                        shouldLog = false;
-                                    }
-                                    break;
-                                case 'Array':
-                                    if (msg.disableStatusCodeLog.indexOf(response.statusCode) !== -1) {
-                                        shouldLog = false;
-                                    }
-                                    break;
-                                case 'RegExp':
-                                    if (msg.disableStatusCodeLog.test(response.statusCode)) {
-                                        shouldLog = false;
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                        shouldLog && this.log && this.log.error && this.log.error(error);
+                        this.log && this.log.error && this.log.error(error);
                         reject(error);
                     } else if (!body || body === '') { // if response is empty
                         correctResponse.payload = ((parseResponse) ? {} : body);
