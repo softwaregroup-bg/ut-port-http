@@ -1,7 +1,7 @@
 {
   "name": "ut-port-http",
   "description": "UT port http module",
-  "version": "7.2.0-rc-diesel.0",
+  "version": "7.2.0-rc-diesel.1",
   "browser": {
     "request": "ut-browser-request",
     "timers": "timers-browserify"
@@ -27,7 +27,6 @@
     "postpublish": "ut-postpublish",
     "postversion": "ut-postversion",
     "precommit": "ut-precommit",
-    "precover": "ut-precover",
     "prepublish": "ut-prepublish",
     "prepush": "ut-prepush",
     "pretest": "ut-pretest",
