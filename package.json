@@ -22,6 +22,7 @@
     "changelog": "ut-changelog",
     "check": "ut-check",
     "cover": "ut-cover",
+    "precover": "ut-precover",
     "lint-js": "ut-lint-js .",
     "postpublish": "ut-postpublish",
     "postversion": "ut-postversion",

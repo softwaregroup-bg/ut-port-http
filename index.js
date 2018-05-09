@@ -3,6 +3,24 @@ const merge = require('lodash.merge');
 const util = require('util');
 const request = (process.type === 'renderer') ? require('ut-browser-request') : require('request');
 const xml2js = require('xml2js');
+const statusCodeError = (msg, resp) => {
+    if (resp.statusCode < 200 || resp.statusCode >= 300) {
+        if (msg.allowedStatusCodes) {
+            if (typeof msg.allowedStatusCodes === 'number') {
+                return msg.allowedStatusCodes !== resp.statusCode;
+            }
+            if (Array.isArray(msg.allowedStatusCodes)) {
+                return msg.allowedStatusCodes.indexOf(resp.statusCode) === -1;
+            }
+            if (msg.allowedStatusCodes instanceof RegExp) {
+                return !msg.allowedStatusCodes.test(resp.statusCode);
+            }
+        }
+        return true;
+    }
+    return false;
+};
+
 let errors;
 let processDownload = (blob, fileName) => {
     if (typeof window === 'object') {
@@ -132,7 +150,7 @@ module.exports = function({parent}) {
                         httpStatus: response.statusCode,
                         payload: body
                     };
-                    if (response.statusCode < 200 || response.statusCode >= 300) {
+                    if (statusCodeError(msg, response)) {
                         let error = errors.http(response);
                         error.code = response.statusCode;
                         error.body = response.body;
