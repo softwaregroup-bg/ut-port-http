@@ -1,7 +1,7 @@
 {
   "name": "ut-port-http",
   "description": "UT port http module",
-  "version": "7.2.0-rc-diesel.1",
+  "version": "7.2.0",
   "browser": {
     "request": "ut-browser-request",
     "timers": "timers-browserify"

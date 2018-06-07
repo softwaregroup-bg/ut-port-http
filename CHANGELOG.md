@@ -1,3 +1,8 @@
+<a name="7.2.0"></a>
+# [7.2.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v7.2.0-rc-diesel.1...v7.2.0) (2018-06-07)
+
+
+
 <a name="7.1.0"></a>
 # [7.1.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v7.1.0-rc-bahur.3...v7.1.0) (2018-03-02)
 
