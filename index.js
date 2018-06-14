@@ -180,12 +180,12 @@ module.exports = function({parent}) {
                         // parse the response if allowed
                         if (parseResponse) {
                             if (!response.headers['content-type']) {
-                                reject(this.errors['portHTTP.missingContentType']());
+                                reject(this.errors['portHTTP.parser.missingContentType']());
                             } else {
                                 if (response.headers['content-type'].indexOf('/xml') !== -1 || response.headers['content-type'].indexOf('/soap+xml') !== -1) {
                                     xml2js.parseString(body, {explicitArray: false}, function(err, result) {
                                         if (err) {
-                                            reject(this.errors['portHTTP.xmlParser'](err));
+                                            reject(this.errors['portHTTP.parser.xmlParser'](err));
                                         } else {
                                             correctResponse.payload = result;
                                             resolve(correctResponse);
