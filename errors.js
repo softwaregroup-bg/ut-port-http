@@ -1,29 +1,15 @@
 'use strict';
-module.exports = create => {
-    const PortHTTP = create('portHTTP');
-    const Generic = create('generic', PortHTTP);
-    const Parser = create('parser', PortHTTP, 'Parser Error');
-
-    return {
-        http: function(response) {
-            if (response instanceof Error) {
-                return new Generic(response);
-            } else {
-                return new PortHTTP({
-                    message: (response.body && response.body.message) || 'HTTP error',
-                    statusCode: response.statusCode,
-                    statusText: response.statusText,
-                    statusMessage: response.statusMessage,
-                    validation: response.body && response.body.validation,
-                    debug: response.body && response.body.debug
-                });
-            }
-        },
-        config: create('config', PortHTTP, 'Configuration error'),
-        missingContentType: create('missingContentType', Parser, 'Server returned no content type'),
-        xmlParser: create('xmlParser', Parser, 'XML Parser Error'),
-        jsonParser: create('jsonParser', Parser, 'Json Parser Error'),
-        parserNotFound: create('parserNotFound', Parser, 'Parser Not Found'),
-        configPropMustBeSet: create('configPropMustBeSet', PortHTTP, 'Configuration property should be set')
-    };
+module.exports = ({defineError, getError, fetchErrors}) => {
+    if (!getError('portHTTP')) {
+        const PortHTTP = defineError('portHTTP', null, 'http port error', 'error');
+        defineError('configPropMustBeSet', PortHTTP, 'Configuration property should be set', 'error');
+        defineError('generic', PortHTTP, 'http port generic error', 'error');
+        defineError('config', PortHTTP, 'Configuration error', 'error');
+        const Parser = defineError('parser', PortHTTP, 'Parser Error', 'error');
+        defineError('missingContentType', Parser, 'Server returned no content type', 'error');
+        defineError('xmlParser', Parser, 'XML Parser Error', 'error');
+        defineError('jsonParser', Parser, 'Json Parser Error', 'error');
+        defineError('parserNotFound', Parser, 'Parser Not Found', 'error');
+    }
+    return fetchErrors('portHTTP');
 };

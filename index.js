@@ -3,6 +3,7 @@ const merge = require('lodash.merge');
 const util = require('util');
 const request = (process.type === 'renderer') ? require('ut-browser-request') : require('request');
 const xml2js = require('xml2js');
+const errorsFactory = require('./errors');
 const statusCodeError = (msg, resp) => {
     if (resp.statusCode < 200 || resp.statusCode >= 300) {
         if (msg.allowedStatusCodes) {
@@ -21,7 +22,6 @@ const statusCodeError = (msg, resp) => {
     return false;
 };
 
-let errors;
 let processDownload = (blob, fileName) => {
     if (typeof window === 'object') {
         let url = window.URL.createObjectURL(blob);
@@ -47,7 +47,7 @@ module.exports = function({parent}) {
             uri: '/',
             headers: {}
         }, config);
-        errors = errors || require('./errors')(this.defineError);
+        Object.assign(this.errors, errorsFactory(this.bus.errors));
     }
 
     if (parent) {
@@ -97,7 +97,7 @@ module.exports = function({parent}) {
         return new Promise((resolve, reject) => {
             // check for required params
             if (!(url = msg.url || this.config.url)) {
-                reject(errors.configPropMustBeSet('url should be set'));
+                reject(this.errors['portHTTP.configPropMustBeSet']('url should be set'));
                 return;
             } else {
                 url = url + (msg.uri || this.config.uri || '');
@@ -130,17 +130,18 @@ module.exports = function({parent}) {
                     }
                     switch (error.code) {
                         case 'ECONNREFUSED':
-                            reject(this.errors.notConnected());
+                            reject(this.errors['port.notConnected']());
                             break;
                         case 'EPIPE':
                         case 'ECONNRESET':
-                            reject(this.errors.disconnectBeforeResponse());
+                            reject(this.errors['port.disconnectBeforeResponse']());
                             break;
                         case 'ESOCKETTIMEDOUT':
                         case 'ETIMEDOUT':
-                            reject(error.connect ? this.errors.notConnected() : this.errors.disconnectBeforeResponse());
+                            reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse']());
                             break;
-                        default: reject(errors.http(error));
+                        default:
+                            reject(this.errors['portHTTP.generic'](error));
                     }
                 } else {
                     // prepare response
@@ -151,9 +152,16 @@ module.exports = function({parent}) {
                         payload: body
                     };
                     if (statusCodeError(msg, response)) {
-                        let error = errors.http(response);
-                        error.code = response.statusCode;
-                        error.body = response.body;
+                        let error = this.errors.portHTTP({
+                            message: (response.body && response.body.message) || 'HTTP error',
+                            statusCode: response.statusCode,
+                            statusText: response.statusText,
+                            statusMessage: response.statusMessage,
+                            validation: response.body && response.body.validation,
+                            debug: response.body && response.body.debug,
+                            code: response.statusCode,
+                            body: response.body
+                        });
                         this.log && this.log.error && this.log.error(error);
                         reject(error);
                     } else if (!body || body === '') { // if response is empty
@@ -172,12 +180,12 @@ module.exports = function({parent}) {
                         // parse the response if allowed
                         if (parseResponse) {
                             if (!response.headers['content-type']) {
-                                reject(errors.missingContentType());
+                                reject(this.errors['portHTTP.parser.missingContentType']());
                             } else {
                                 if (response.headers['content-type'].indexOf('/xml') !== -1 || response.headers['content-type'].indexOf('/soap+xml') !== -1) {
                                     xml2js.parseString(body, {explicitArray: false}, function(err, result) {
                                         if (err) {
-                                            reject(errors.xmlParser(err));
+                                            reject(this.errors['portHTTP.parser.xmlParser'](err));
                                         } else {
                                             correctResponse.payload = result;
                                             resolve(correctResponse);
