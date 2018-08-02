@@ -1,3 +1,13 @@
+<a name="7.3.0"></a>
+# [7.3.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v7.2.0...v7.3.0) (2018-08-02)
+
+
+### Bug Fixes
+
+* errors ([#26](https://github.com/softwaregroup-bg/ut-port-http/issues/26)) ([f137ddf](https://github.com/softwaregroup-bg/ut-port-http/commit/f137ddf))
+
+
+
 <a name="7.2.0"></a>
 # [7.2.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v7.2.0-rc-diesel.1...v7.2.0) (2018-06-07)
 
