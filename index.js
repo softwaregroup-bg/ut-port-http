@@ -97,7 +97,7 @@ module.exports = function({parent}) {
         return new Promise((resolve, reject) => {
             // check for required params
             if (!(url = msg.url || this.config.url)) {
-                reject(this.errors['portHTTP.configPropMustBeSet']('url should be set'));
+                reject(this.errors['portHTTP.configPropMustBeSet']({message: 'url should be set'}));
                 return;
             } else {
                 url = url + (msg.uri || this.config.uri || '');
@@ -130,15 +130,15 @@ module.exports = function({parent}) {
                     }
                     switch (error.code) {
                         case 'ECONNREFUSED':
-                            reject(this.errors['port.notConnected']());
+                            reject(this.errors['port.notConnected']({}));
                             break;
                         case 'EPIPE':
                         case 'ECONNRESET':
-                            reject(this.errors['port.disconnectBeforeResponse']());
+                            reject(this.errors['port.disconnectBeforeResponse']({}));
                             break;
                         case 'ESOCKETTIMEDOUT':
                         case 'ETIMEDOUT':
-                            reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse']());
+                            reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse']({}));
                             break;
                         default:
                             reject(this.errors['portHTTP.generic'](error));
@@ -180,7 +180,7 @@ module.exports = function({parent}) {
                         // parse the response if allowed
                         if (parseResponse) {
                             if (!response.headers['content-type']) {
-                                reject(this.errors['portHTTP.parser.missingContentType']());
+                                reject(this.errors['portHTTP.parser.missingContentType']({}));
                             } else {
                                 if (response.headers['content-type'].indexOf('/xml') !== -1 || response.headers['content-type'].indexOf('/soap+xml') !== -1) {
                                     xml2js.parseString(body, {explicitArray: false}, function(err, result) {
