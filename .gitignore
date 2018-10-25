@@ -4,3 +4,4 @@ node_modules/**/*
 .projectile
 .tern-project
 *.log
+package-lock.json
