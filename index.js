@@ -1,6 +1,4 @@
 'use strict';
-const merge = require('lodash.merge');
-const util = require('util');
 const request = (process.type === 'renderer') ? require('ut-browser-request') : require('request');
 const xml2js = require('xml2js');
 const errorsFactory = require('./errors');
@@ -35,43 +33,34 @@ let processDownload = (blob, fileName) => {
         a.remove();
     }
 };
-module.exports = function({parent}) {
-    function HttpPort({config}) {
-        parent && parent.apply(this, arguments);
-        this.config = merge({
-            id: null,
-            logLevel: 'info',
+module.exports = ({utPort}) => class HttpPort extends utPort {
+    constructor() {
+        super(...arguments);
+        Object.assign(this.errors, errorsFactory(this.bus.errors));
+    }
+    get defaults() {
+        return {
             type: 'http',
             url: false,
             method: 'get',
             uri: '/',
             headers: {}
-        }, config);
-        Object.assign(this.errors, errorsFactory(this.bus.errors));
+        };
     }
-
-    if (parent) {
-        util.inherits(HttpPort, parent);
-    }
-
-    HttpPort.prototype.init = function init() {
-        parent && parent.prototype.init.apply(this, arguments);
+    async init() {
+        const result = super.init(...arguments);
         this.bytesSent = this.counter && this.counter('counter', 'bs', 'Bytes sent', 300);
         this.bytesReceived = this.counter && this.counter('counter', 'br', 'Bytes received', 300);
-    };
-
-    HttpPort.prototype.start = function start(callback) {
+        return result;
+    }
+    async start() {
         this.bus.importMethods(this.config, this.config.imports, {request: true, response: true}, this);
-        return Promise.resolve()
-            .then(() => parent.prototype.start.apply(this, Array.prototype.slice.call(arguments)))
-            .then(result => {
-                this.pull(this.exec);
-                return result;
-            });
-    };
-    HttpPort.prototype.exec = function exec(msg) {
+        const result = await super.start(...arguments);
+        this.pull(this.exec);
+        return result;
+    }
+    async exec(msg) {
         let $meta = (arguments.length > 1 && arguments[arguments.length - 1]);
-
         let methodName = ($meta && $meta.method);
         if (methodName) {
             let method = this.config[methodName];
@@ -80,7 +69,7 @@ module.exports = function({parent}) {
                 method = methodName.length === 2 && this.config[methodName[1]];
             }
             if (method instanceof Function) {
-                return Promise.resolve().then(() => method.apply(this, Array.prototype.slice.call(arguments)));
+                return method.apply(this, Array.prototype.slice.call(arguments));
             }
         }
 
@@ -215,7 +204,5 @@ module.exports = function({parent}) {
                 });
             });
         });
-    };
-
-    return HttpPort;
+    }
 };
