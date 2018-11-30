@@ -54,7 +54,7 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
         return result;
     }
     async start() {
-        this.bus.importMethods(this.config, this.config.imports, {request: true, response: true}, this);
+        this.bus.attachHandlers(this.methods, this.config.imports, this);
         const result = await super.start(...arguments);
         this.pull(this.exec);
         return result;
@@ -63,11 +63,7 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
         let $meta = (arguments.length > 1 && arguments[arguments.length - 1]);
         let methodName = ($meta && $meta.method);
         if (methodName) {
-            let method = this.config[methodName];
-            if (!method) {
-                methodName = methodName.split('/', 2);
-                method = methodName.length === 2 && this.config[methodName[1]];
-            }
+            let method = this.findHandler(methodName);
             if (method instanceof Function) {
                 return method.apply(this, Array.prototype.slice.call(arguments));
             }
