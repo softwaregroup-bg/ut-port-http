@@ -1,7 +1,7 @@
 {
   "name": "ut-port-http",
   "description": "UT port http module",
-  "version": "7.4.0-rc-godfather.2",
+  "version": "8.0.0",
   "browser": {
     "request": "ut-browser-request",
     "timers": "timers-browserify"

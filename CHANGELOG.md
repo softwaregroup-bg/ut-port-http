@@ -1,3 +1,20 @@
+# [8.0.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v7.3.0...v8.0.0) (2019-02-02)
+
+
+### Bug Fixes
+
+* dependency ([0c01617](https://github.com/softwaregroup-bg/ut-port-http/commit/0c01617))
+* refactor as class ([#29](https://github.com/softwaregroup-bg/ut-port-http/issues/29)) ([6588a12](https://github.com/softwaregroup-bg/ut-port-http/commit/6588a12))
+* remove unused dependencies ([845c2f8](https://github.com/softwaregroup-bg/ut-port-http/commit/845c2f8))
+* upgrade ut-tools ([09a7436](https://github.com/softwaregroup-bg/ut-port-http/commit/09a7436))
+
+
+### BREAKING CHANGES
+
+* requires upgrade of ut-port and ut-run
+
+
+
 <a name="7.3.0"></a>
 # [7.3.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v7.2.0...v7.3.0) (2018-08-02)
 
