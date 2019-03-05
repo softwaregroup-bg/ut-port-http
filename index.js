@@ -130,15 +130,15 @@ module.exports = function({parent}) {
                     }
                     switch (error.code) {
                         case 'ECONNREFUSED':
-                            reject(this.errors['port.notConnected']());
+                            reject(this.errors['notConnected']());
                             break;
                         case 'EPIPE':
                         case 'ECONNRESET':
-                            reject(this.errors['port.disconnectBeforeResponse']());
+                            reject(this.errors['disconnectBeforeResponse']());
                             break;
                         case 'ESOCKETTIMEDOUT':
                         case 'ETIMEDOUT':
-                            reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse']());
+                            reject(this.errors[error.connect ? 'notConnected' : 'disconnectBeforeResponse']());
                             break;
                         default:
                             reject(this.errors['portHTTP.generic'](error));
