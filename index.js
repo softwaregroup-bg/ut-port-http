@@ -90,6 +90,7 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
 
             let reqProps = {
                 followRedirect: false,
+                json: msg.json || this.config.json,
                 withCredentials: msg.withCredentials || this.config.withCredentials,
                 qs: msg.qs,
                 method: msg.httpMethod || this.config.method,
