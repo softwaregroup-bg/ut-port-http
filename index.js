@@ -106,7 +106,26 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
             this.log && this.log.debug && this.log.debug(reqProps);
             // do the connection + request
             let req = request(reqProps, (error, response, body) => {
-                this.log && this.log.debug && this.log.debug({error, response, body});
+                const {
+                    statusCode,
+                    statusText,
+                    statusMessage
+                } = response;
+                const {
+                    method,
+                    uri
+                } = response.request;
+                this.log && this.log.debug && this.log.debug({
+                    error,
+                    http: {
+                        method,
+                        url: uri && uri.href,
+                        statusCode,
+                        statusText,
+                        statusMessage,
+                        body
+                    }
+                });
                 if (error) { // return error if any
                     if (this.bus.config.debug) {
                         error.request = reqProps;
@@ -133,18 +152,18 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
                     $meta.mtid = 'response';
                     let correctResponse = {
                         headers: response.headers,
-                        httpStatus: response.statusCode,
+                        httpStatus: statusCode,
                         payload: body
                     };
                     if (statusCodeError(msg, response)) {
                         let error = this.errors.portHTTP({
                             message: (response.body && response.body.message) || 'HTTP error',
-                            statusCode: response.statusCode,
-                            statusText: response.statusText,
-                            statusMessage: response.statusMessage,
+                            statusCode,
+                            statusText,
+                            statusMessage,
                             validation: response.body && response.body.validation,
                             debug: response.body && response.body.debug,
-                            code: response.statusCode,
+                            code: statusCode,
                             body: response.body
                         });
                         this.log && this.log.error && this.log.error(error);
