@@ -1,3 +1,13 @@
+## [8.0.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.1...v8.0.2) (2019-09-12)
+
+
+### Bug Fixes
+
+* avoid logging circular structures ([7557a87](https://github.com/softwaregroup-bg/ut-port-http/commit/7557a87))
+* update dependencies ([eed0194](https://github.com/softwaregroup-bg/ut-port-http/commit/eed0194))
+
+
+
 ## [8.0.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.0...v8.0.1) (2019-03-22)
 
 
