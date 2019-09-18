@@ -114,12 +114,12 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
                 const {
                     method,
                     uri
-                } = response.request;
+                } = response.request || reqProps;
                 this.log && this.log.debug && this.log.debug({
                     error,
                     http: {
                         method,
-                        url: uri && uri.href,
+                        url: (uri && uri.href) || url,
                         statusCode,
                         statusText,
                         statusMessage,
