@@ -1,3 +1,12 @@
+## [8.0.3](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.2...v8.0.3) (2019-09-18)
+
+
+### Bug Fixes
+
+* response.request is undefined when using browser-request ([#32](https://github.com/softwaregroup-bg/ut-port-http/issues/32)) ([f149daf](https://github.com/softwaregroup-bg/ut-port-http/commit/f149daf))
+
+
+
 ## [8.0.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.1...v8.0.2) (2019-09-12)
 
 
