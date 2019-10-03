@@ -106,104 +106,109 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
             this.log && this.log.debug && this.log.debug(reqProps);
             // do the connection + request
             let req = request(reqProps, (error, response = {}, body = {}) => {
-                const {
-                    statusCode,
-                    statusText,
-                    statusMessage
-                } = response;
-                const {
-                    method,
-                    uri
-                } = response.request || reqProps;
-                this.log && this.log.debug && this.log.debug({
-                    error,
-                    http: {
-                        method,
-                        url: (uri && uri.href) || url,
+                try {
+                    const {
                         statusCode,
                         statusText,
-                        statusMessage,
-                        body
-                    }
-                });
-                if (error) { // return error if any
-                    if (this.bus.config.debug) {
-                        error.request = reqProps;
-                    } else {
-                        error.request = {method: reqProps.body && reqProps.body.method};
-                    }
-                    switch (error.code) {
-                        case 'ECONNREFUSED':
-                            reject(this.errors['port.notConnected']());
-                            break;
-                        case 'EPIPE':
-                        case 'ECONNRESET':
-                            reject(this.errors['port.disconnectBeforeResponse']());
-                            break;
-                        case 'ESOCKETTIMEDOUT':
-                        case 'ETIMEDOUT':
-                            reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse']());
-                            break;
-                        default:
-                            reject(this.errors['portHTTP.generic'](error));
-                    }
-                } else {
-                    // prepare response
-                    $meta.mtid = 'response';
-                    let correctResponse = {
-                        headers: response.headers,
-                        httpStatus: statusCode,
-                        payload: body
-                    };
-                    if (statusCodeError(msg, response)) {
-                        let error = this.errors.portHTTP({
-                            message: (response.body && response.body.message) || 'HTTP error',
+                        statusMessage
+                    } = response;
+                    const {
+                        method,
+                        uri,
+                        url
+                    } = response.request || reqProps;
+                    this.log && this.log.debug && this.log.debug({
+                        error,
+                        http: {
+                            method,
+                            url: (uri && uri.href) || url,
                             statusCode,
                             statusText,
                             statusMessage,
-                            validation: response.body && response.body.validation,
-                            debug: response.body && response.body.debug,
-                            code: statusCode,
-                            body: response.body
-                        });
-                        this.log && this.log.error && this.log.error(error);
-                        reject(error);
-                    } else if (!body || body === '') { // if response is empty
-                        correctResponse.payload = ((parseResponse) ? {} : body);
-                        resolve(correctResponse);
-                    } else {
-                        // process blob type response
-                        if (reqProps.blob) {
-                            correctResponse.payload = {
-                                result: (((response.getResponseHeader('Content-Disposition') || '').split('filename=') || [])[1] || '').replace(/^"|"$/g, '')
-                            };
-                            processDownload(response.body, correctResponse.payload.result);
-                            resolve(correctResponse);
+                            body
                         }
-                        // todo is this really necessarily, probably is provided by request module already
-                        // parse the response if allowed
-                        if (parseResponse) {
-                            if (!response.headers['content-type']) {
-                                reject(this.errors['portHTTP.parser.missingContentType']());
-                            } else {
-                                if (response.headers['content-type'].indexOf('/xml') !== -1 || response.headers['content-type'].indexOf('/soap+xml') !== -1) {
-                                    xml2js.parseString(body, {explicitArray: false}, function(err, result) {
-                                        if (err) {
-                                            reject(this.errors['portHTTP.parser.xmlParser'](err));
-                                        } else {
-                                            correctResponse.payload = result;
-                                            resolve(correctResponse);
-                                        }
-                                    });
-                                } else {
-                                    correctResponse.payload = body;
-                                    resolve(correctResponse);
-                                }
-                            }
+                    });
+                    if (error) { // return error if any
+                        if (this.bus.config.debug) {
+                            error.request = reqProps;
                         } else {
+                            error.request = {method: reqProps.body && reqProps.body.method};
+                        }
+                        switch (error.code) {
+                            case 'ECONNREFUSED':
+                                reject(this.errors['port.notConnected']());
+                                break;
+                            case 'EPIPE':
+                            case 'ECONNRESET':
+                                reject(this.errors['port.disconnectBeforeResponse']());
+                                break;
+                            case 'ESOCKETTIMEDOUT':
+                            case 'ETIMEDOUT':
+                                reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse']());
+                                break;
+                            default:
+                                reject(this.errors['portHTTP.generic'](error));
+                        }
+                    } else {
+                        // prepare response
+                        $meta.mtid = 'response';
+                        let correctResponse = {
+                            headers: response.headers,
+                            httpStatus: statusCode,
+                            payload: body
+                        };
+                        if (statusCodeError(msg, response)) {
+                            let error = this.errors.portHTTP({
+                                message: (response.body && response.body.message) || 'HTTP error',
+                                statusCode,
+                                statusText,
+                                statusMessage,
+                                validation: response.body && response.body.validation,
+                                debug: response.body && response.body.debug,
+                                code: statusCode,
+                                body: response.body
+                            });
+                            this.log && this.log.error && this.log.error(error);
+                            reject(error);
+                        } else if (!body || body === '') { // if response is empty
+                            correctResponse.payload = ((parseResponse) ? {} : body);
                             resolve(correctResponse);
+                        } else {
+                            // process blob type response
+                            if (reqProps.blob) {
+                                correctResponse.payload = {
+                                    result: (((response.getResponseHeader('Content-Disposition') || '').split('filename=') || [])[1] || '').replace(/^"|"$/g, '')
+                                };
+                                processDownload(response.body, correctResponse.payload.result);
+                                resolve(correctResponse);
+                            }
+                            // todo is this really necessarily, probably is provided by request module already
+                            // parse the response if allowed
+                            if (parseResponse) {
+                                if (!response.headers['content-type']) {
+                                    reject(this.errors['portHTTP.parser.missingContentType']());
+                                } else {
+                                    if (response.headers['content-type'].indexOf('/xml') !== -1 || response.headers['content-type'].indexOf('/soap+xml') !== -1) {
+                                        xml2js.parseString(body, {explicitArray: false}, function(err, result) {
+                                            if (err) {
+                                                reject(this.errors['portHTTP.parser.xmlParser'](err));
+                                            } else {
+                                                correctResponse.payload = result;
+                                                resolve(correctResponse);
+                                            }
+                                        });
+                                    } else {
+                                        correctResponse.payload = body;
+                                        resolve(correctResponse);
+                                    }
+                                }
+                            } else {
+                                resolve(correctResponse);
+                            }
                         }
                     }
+                } catch (e) {
+                    reject(this.errors.portHTTP(e));
                 }
             });
             (typeof req.on === 'function') && req.on('request', req => {
