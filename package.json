@@ -1,7 +1,7 @@
 {
   "name": "ut-port-http",
   "description": "UT port http module",
-  "version": "8.0.4",
+  "version": "8.0.5",
   "browser": {
     "request": "ut-browser-request",
     "timers": "timers-browserify"

@@ -1,3 +1,12 @@
+## [8.0.5](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.4...v8.0.5) (2019-10-03)
+
+
+### Bug Fixes
+
+* surround request callback into a try catch block to prevent process exit ([#34](https://github.com/softwaregroup-bg/ut-port-http/issues/34)) ([a665dea](https://github.com/softwaregroup-bg/ut-port-http/commit/a665dea))
+
+
+
 ## [8.0.4](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.3...v8.0.4) (2019-10-03)
 
 
