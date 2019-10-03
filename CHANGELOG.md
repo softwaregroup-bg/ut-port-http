@@ -1,3 +1,12 @@
+## [8.0.4](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.3...v8.0.4) (2019-10-03)
+
+
+### Bug Fixes
+
+* set request and body to empty objects when there is an error ([8c25058](https://github.com/softwaregroup-bg/ut-port-http/commit/8c25058))
+
+
+
 ## [8.0.3](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.2...v8.0.3) (2019-09-18)
 
 
