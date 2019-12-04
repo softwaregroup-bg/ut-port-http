@@ -1,3 +1,12 @@
+# [8.1.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.5...v8.1.0) (2019-12-04)
+
+
+### Features
+
+* Added formData to request props ([#35](https://github.com/softwaregroup-bg/ut-port-http/issues/35)) ([ce60a9c](https://github.com/softwaregroup-bg/ut-port-http/commit/ce60a9c))
+
+
+
 ## [8.0.5](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.4...v8.0.5) (2019-10-03)
 
 
