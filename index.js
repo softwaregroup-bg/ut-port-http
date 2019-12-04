@@ -97,7 +97,8 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
                 timeout: msg.requestTimeout || this.config.requestTimeout || 30000,
                 headers: headers,
                 blob: msg.blob,
-                body: msg.payload
+                body: msg.payload,
+                formData: msg.formData
             };
             // if there is a raw config property it will be merged with `reqProps`
             if (this.config.raw) {
