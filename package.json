@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "request": "2.88.0",
-    "timers-browserify": "2.0.4",
+    "timers-browserify": "2.0.11",
+    "ut-openapi": "^0.1.1",
     "xml2js": "0.4.19"
   },
   "devDependencies": {

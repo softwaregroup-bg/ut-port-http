@@ -1,0 +1,12 @@
+{
+    "portHTTP": "http port error",
+    "portHTTP.configPropMustBeSet": "Configuration property should be set",
+    "portHTTP.generic": "http port generic error",
+    "portHTTP.config": "Configuration error",
+    "portHTTP.namespaceNotDefined": "Namespace {namespace} is not defined",
+    "portHTTP.parser": "Parser Error",
+    "portHTTP.parser.missingContentType": "Server returned no content type",
+    "portHTTP.parser.xmlParser": "XML Parser Error",
+    "portHTTP.parser.jsonParser": "Json Parser Error",
+    "portHTTP.parser.parserNotFound": "Parser Not Found"
+}
