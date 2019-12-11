@@ -143,15 +143,18 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                         }
                         switch (error.code) {
                             case 'ECONNREFUSED':
-                                reject(this.errors['port.notConnected']());
+                                reject(this.errors['port.notConnected'](error));
                                 break;
                             case 'EPIPE':
                             case 'ECONNRESET':
-                                reject(this.errors['port.disconnectBeforeResponse']());
+                                reject(this.errors['port.disconnectBeforeResponse'](error));
                                 break;
                             case 'ESOCKETTIMEDOUT':
                             case 'ETIMEDOUT':
-                                reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse']());
+                                reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse'](error));
+                                break;
+                            case 'ENOTFOUND':
+                                reject(this.errors['portHTTP.notFound'](error));
                                 break;
                             default:
                                 reject(this.errors['portHTTP.generic'](error));
