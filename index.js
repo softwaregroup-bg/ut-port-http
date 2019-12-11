@@ -142,6 +142,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                             error.request = {method: reqProps.body && reqProps.body.method};
                         }
                         switch (error.code) {
+                            case 'ENOTFOUND':
                             case 'ECONNREFUSED':
                                 reject(this.errors['port.notConnected'](error));
                                 break;
@@ -152,9 +153,6 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                             case 'ESOCKETTIMEDOUT':
                             case 'ETIMEDOUT':
                                 reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse'](error));
-                                break;
-                            case 'ENOTFOUND':
-                                reject(this.errors['portHTTP.notFound'](error));
                                 break;
                             default:
                                 reject(this.errors['portHTTP.generic'](error));

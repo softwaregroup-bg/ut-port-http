@@ -1,6 +1,5 @@
 {
     "portHTTP": "http port error",
-    "portHTTP.notFound": "Address not found",
     "portHTTP.configPropMustBeSet": "Configuration property should be set: {prop}",
     "portHTTP.generic": "http port generic error",
     "portHTTP.config": "Configuration error",
