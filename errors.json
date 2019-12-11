@@ -1,6 +1,6 @@
 {
     "portHTTP": "http port error",
-    "portHTTP.configPropMustBeSet": "Configuration property should be set",
+    "portHTTP.configPropMustBeSet": "Configuration property should be set: {prop}",
     "portHTTP.generic": "http port generic error",
     "portHTTP.config": "Configuration error",
     "portHTTP.namespaceNotDefined": "Namespace {namespace} is not defined",

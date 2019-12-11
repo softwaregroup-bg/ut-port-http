@@ -85,36 +85,29 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
         }
 
         return new Promise((resolve, reject) => {
-            let parseResponse = true;
-            let reqProps;
+            const parseResponse = this.config.parseResponse !== false && msg.parseResponse !== false;
+            const reqProps = {
+                withCredentials: msg.withCredentials || this.config.withCredentials,
+                requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000
+            };
             if (methodName && this.openApi[methodName]) {
-                parseResponse = false;
-                reqProps = this.openApi[methodName](msg);
+                Object.assign(reqProps, this.openApi[methodName](msg));
             } else {
-                if (this.config.parseResponse === false || msg.parseResponse === false) {
-                    parseResponse = false;
-                }
                 // check for required params
                 let url = msg.url || this.config.url;
-                if (!url) return reject(this.errors['portHTTP.configPropMustBeSet']('url should be set'));
+                if (!url) return reject(this.errors['portHTTP.configPropMustBeSet']({params: {prop: 'url'}}));
                 url += msg.uri || this.config.uri || '';
 
-                reqProps = {
+                Object.assign(reqProps, {
                     followRedirect: false,
-                    withCredentials: msg.withCredentials || this.config.withCredentials,
                     qs: msg.qs,
                     method: msg.httpMethod || this.config.method,
                     url: url,
-                    timeout: msg.requestTimeout || this.config.requestTimeout || 30000,
                     headers: Object.assign({}, this.config.headers, msg.headers),
                     blob: msg.blob,
                     body: msg.payload,
                     formData: msg.formData
-                };
-                // if there is a raw config property it will be merged with `reqProps`
-                if (this.config.raw) {
-                    Object.assign(reqProps, this.config.raw);
-                }
+                }, this.config.raw);
             }
 
             this.log && this.log.debug && this.log.debug(reqProps);
