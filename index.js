@@ -49,6 +49,52 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
             openApi: {}
         };
     }
+
+    get schema() {
+        return {
+            type: 'object',
+            properties: {
+                url: {
+                    oneOf: [
+                        {
+                            enum: [ false ]
+                        },
+                        {
+                            type: 'string',
+                            format: 'uri',
+                            pattern: '^https?://'
+                        }
+                    ]
+                },
+                uri: {
+                    type: 'string'
+                },
+                method: {
+                    type: 'string',
+                    enum: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
+                },
+                headers: {
+                    type: 'object'
+                },
+                openApi: {
+                    type: 'object'
+                },
+                parseResponse: {
+                    type: 'boolean'
+                },
+                requestTimeout: {
+                    type: 'number'
+                },
+                withCredentials: {
+                    type: 'boolean'
+                },
+                raw: {
+                    type: 'object'
+                }
+            }
+        };
+    }
+
     async init() {
         const result = super.init(...arguments);
         this.bytesSent = this.counter && this.counter('counter', 'bs', 'Bytes sent', 300);
