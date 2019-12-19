@@ -43,7 +43,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
         return {
             type: 'http',
             url: false,
-            method: 'get',
+            method: 'GET',
             uri: '/',
             headers: {},
             openApi: {}
@@ -137,7 +137,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000
             };
             if (methodName && this.openApi[methodName]) {
-                Object.assign(reqProps, this.openApi[methodName](msg));
+                Object.assign(reqProps, this.config.raw, this.openApi[methodName](msg));
             } else {
                 // check for required params
                 let url = msg.url || this.config.url;
