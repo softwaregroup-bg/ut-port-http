@@ -171,3 +171,29 @@ All three approaches are acceptable as a value:
   * the content of the swagger document
   * path to a local swagger document
   * url for obtaining the document with http `GET` request
+
+The message format for calling these auto-generated
+swagger methods has the following specifics:
+
+* can have a `body` property which will be used
+as a payload
+* can have a `params` property which ill be used
+for extracting `path`, `query` and `header` parameters.
+
+Example:
+
+```js
+await utMethod('provider2.segment2.operationX')({
+    body: {
+        payloadProp1: 'payloadValue1',
+        payloadProp2: 'payloadValue2'
+    },
+    params: {
+        param1: 'value1',
+        param2: 'value2'
+    }
+});
+```
+
+For more information see
+[ut-openapi request format](https://github.com/softwaregroup-bg/ut-openapi/blob/master/format/request.js)
