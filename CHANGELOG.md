@@ -1,3 +1,12 @@
+# [8.2.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.1.0...v8.2.0) (2019-12-20)
+
+
+### Features
+
+* automatic methods definition based on openapi/swagger documents ([d458be4](https://github.com/softwaregroup-bg/ut-port-http/commit/d458be4))
+
+
+
 # [8.1.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.0.5...v8.1.0) (2019-12-04)
 
 
