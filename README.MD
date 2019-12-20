@@ -22,22 +22,22 @@ Create http/s requests based on [`request`](https://github.com/request/request/b
     }
 ```
 
- * `id`: unique identification of port 
- 
- * `logLevel`: trace, debug or info. 
- 
+ * `id`: unique identification of port
+
+ * `logLevel`: trace, debug or info.
+
  * `url`: remote server URL `http://example.com:80`.
- 
+
  * `uri`: remote server request URI `/about.html`.
- 
- * `method`: http request method `POST` or `GET`.  
- 
+
+ * `method`: http request method `POST` or `GET`.
+
  * `receive`: incoming message convert function , return object or promise.
- 
+
  * `send`: outgoing message convert function, return object or promise .
- 
+
  Additional configuration options:
- 
+
 * `raw`: this property can be set in config file only, everything in this property will be merged with current configuration
 
 * `parseResponse`: to parse the response or not, defaults to `true`
@@ -52,7 +52,7 @@ Create http/s requests based on [`request`](https://github.com/request/request/b
 
 #### Response:
 
-Response is always an object containing response from remote server or error.           
+Response is always an object containing response from remote server or error.
 If server returns status code different from `200 (OK)` or some error occured during the process, the response message object will look like:
 ```javascript
 {
@@ -65,7 +65,7 @@ If server returns status code different from `200 (OK)` or some error occured du
 ```
 
 Message proporties:
-* `payload`: Contains response data returned from the remote server. If header `content-type` contains `/xml` and `parseResponse = true` the data will be converted to javascript object, the same is for Json, if for some reason `parseResponse=true` and there is not parser available for parsing the response, error will be emitted 
+* `payload`: Contains response data returned from the remote server. If header `content-type` contains `/xml` and `parseResponse = true` the data will be converted to javascript object, the same is for Json, if for some reason `parseResponse=true` and there is not parser available for parsing the response, error will be emitted
 * `headers`: Response headers.
 * `httpStatus`: Response status code.
 
@@ -105,7 +105,7 @@ module.exports = {
                 return msg;
             });
     },
-	
+
     send:function(msg) {
         msg.headers = {'Content-Type': 'text/xml'};
         var templatePath = require.resolve('./' + msg.$$.opcode + '.xml.marko');
@@ -122,3 +122,52 @@ module.exports = {
 
 
 ```
+
+## Open API
+
+`ut-port-http` provides the possibility to
+be used as a swagger client in a semi-automatic
+fashion. For this aim an additional configuration
+property called `openApi` must be provided.
+
+Example:
+
+```js
+module.exports = (...params) => {
+    return class swaggerClient extends require('ut-port-http')(...params) {
+        get defaults() {
+            return {
+                namespace: [
+                    'provider1',
+                    'provider2',
+                    'provider3'
+                ],
+                openApi: {
+                    'provider1': require('./provider2-swagger.json'),
+                    'provider2.segment1': require.resolve('./provider2/segment1-swagger.json'),
+                    'provider2.segment2': require.resolve('./provider2/segment2-swagger.json'),
+                    'provider3': 'http://www.provider3.com/swagger.json'
+                }
+            };
+        }
+    };
+};
+```
+
+Note that the `openApi` configuration property
+represents a map where:
+
+* the keys determine how the operation IDs of the
+document will be prefixed. For example if the
+document is prefixed with key `provider2.segment2`
+and contains a route with operationId `operationX`,
+then it will be accessible via the method
+`provider2.segment2.operationX` through the bus.
+Therefore the first parts (before the first dot) of
+all prefixes must be present in the `namespace` array.
+
+* the values are the documents themselves.
+All three approaches are acceptable as a value:
+  * the content of the swagger document
+  * path to a local swagger document
+  * url for obtaining the document with http `GET` request
