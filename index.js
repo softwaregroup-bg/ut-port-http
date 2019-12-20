@@ -1,7 +1,8 @@
 'use strict';
 const request = (process.type === 'renderer') ? require('ut-browser-request') : require('request');
+const utOpenAPI = require('ut-openapi');
 const xml2js = require('xml2js');
-const errorsFactory = require('./errors');
+const errors = require('./errors.json');
 const statusCodeError = (msg, resp) => {
     if (resp.statusCode < 200 || resp.statusCode >= 300) {
         if (msg.allowedStatusCodes) {
@@ -20,10 +21,10 @@ const statusCodeError = (msg, resp) => {
     return false;
 };
 
-let processDownload = (blob, fileName) => {
+const processDownload = (blob, fileName) => {
     if (typeof window === 'object') {
-        let url = window.URL.createObjectURL(blob);
-        var a = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
         a.style = 'display: none';
         a.href = url;
         a.download = fileName;
@@ -33,24 +34,84 @@ let processDownload = (blob, fileName) => {
         a.remove();
     }
 };
-module.exports = ({utPort}) => class HttpPort extends utPort {
+module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
     constructor() {
         super(...arguments);
-        Object.assign(this.errors, errorsFactory(this.bus.errors));
+        Object.assign(this.errors, registerErrors(errors));
     }
     get defaults() {
         return {
             type: 'http',
             url: false,
-            method: 'get',
+            method: 'GET',
             uri: '/',
-            headers: {}
+            headers: {},
+            openApi: {}
         };
     }
+
+    get schema() {
+        return {
+            type: 'object',
+            properties: {
+                url: {
+                    oneOf: [
+                        {
+                            enum: [ false ]
+                        },
+                        {
+                            type: 'string',
+                            format: 'uri',
+                            pattern: '^https?://'
+                        }
+                    ]
+                },
+                uri: {
+                    type: 'string'
+                },
+                method: {
+                    type: 'string',
+                    enum: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
+                },
+                headers: {
+                    type: 'object'
+                },
+                openApi: {
+                    type: 'object'
+                },
+                parseResponse: {
+                    type: 'boolean'
+                },
+                requestTimeout: {
+                    type: 'number'
+                },
+                withCredentials: {
+                    type: 'boolean'
+                },
+                raw: {
+                    type: 'object'
+                }
+            }
+        };
+    }
+
     async init() {
         const result = super.init(...arguments);
         this.bytesSent = this.counter && this.counter('counter', 'bs', 'Bytes sent', 300);
         this.bytesReceived = this.counter && this.counter('counter', 'br', 'Bytes received', 300);
+        this.openApi = {};
+        const openApiNamespaces = Object.keys({...this.config.openApi}).filter(Boolean);
+        if (openApiNamespaces.length) {
+            const openApi = utOpenAPI();
+            openApiNamespaces.forEach(namespace => {
+                if (![].concat(this.config.namespace).find(n => namespace.startsWith(n))) {
+                    throw this.errors['portHTTP.namespaceNotDefined']({params: {namespace: namespace.split('.')[0]}});
+                }
+            });
+            await openApi.load(this.config.openApi);
+            Object.assign(this.openApi, openApi.export());
+        }
+
         return result;
     }
     async start() {
@@ -60,53 +121,44 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
         return result;
     }
     async exec(msg) {
-        let $meta = (arguments.length > 1 && arguments[arguments.length - 1]);
-        let methodName = ($meta && $meta.method);
+        const $meta = (arguments.length > 1 && arguments[arguments.length - 1]);
+        const methodName = $meta && $meta.method;
         if (methodName) {
-            let method = this.findHandler(methodName);
+            const method = this.findHandler(methodName);
             if (method instanceof Function) {
                 return method.apply(this, Array.prototype.slice.call(arguments));
             }
         }
 
-        let url = '';
-        let headers = Object.assign({}, this.config.headers, msg.headers);
-        let parseResponse = true;
-        if (this.config.parseResponse === false) {
-            parseResponse = false;
-        }
-        if (msg.parseResponse === false) {
-            parseResponse = false;
-        }
-
         return new Promise((resolve, reject) => {
-            // check for required params
-            if (!(url = msg.url || this.config.url)) {
-                reject(this.errors['portHTTP.configPropMustBeSet']('url should be set'));
-                return;
+            const parseResponse = this.config.parseResponse !== false && msg.parseResponse !== false;
+            const reqProps = {
+                withCredentials: msg.withCredentials || this.config.withCredentials,
+                requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000
+            };
+            if (methodName && this.openApi[methodName]) {
+                Object.assign(reqProps, this.config.raw, this.openApi[methodName](msg));
             } else {
-                url = url + (msg.uri || this.config.uri || '');
+                // check for required params
+                let url = msg.url || this.config.url;
+                if (!url) return reject(this.errors['portHTTP.configPropMustBeSet']({params: {prop: 'url'}}));
+                url += msg.uri || this.config.uri || '';
+
+                Object.assign(reqProps, {
+                    followRedirect: false,
+                    qs: msg.qs,
+                    method: msg.httpMethod || this.config.method,
+                    url: url,
+                    headers: Object.assign({}, this.config.headers, msg.headers),
+                    blob: msg.blob,
+                    body: msg.payload,
+                    formData: msg.formData
+                }, this.config.raw);
             }
 
-            let reqProps = {
-                followRedirect: false,
-                withCredentials: msg.withCredentials || this.config.withCredentials,
-                qs: msg.qs,
-                method: msg.httpMethod || this.config.method,
-                url: url,
-                timeout: msg.requestTimeout || this.config.requestTimeout || 30000,
-                headers: headers,
-                blob: msg.blob,
-                body: msg.payload,
-                formData: msg.formData
-            };
-            // if there is a raw config property it will be merged with `reqProps`
-            if (this.config.raw) {
-                Object.assign(reqProps, this.config.raw);
-            }
             this.log && this.log.debug && this.log.debug(reqProps);
             // do the connection + request
-            let req = request(reqProps, (error, response = {}, body = {}) => {
+            const req = request(reqProps, (error, response = {}, body = {}) => {
                 try {
                     const {
                         statusCode,
@@ -136,16 +188,17 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
                             error.request = {method: reqProps.body && reqProps.body.method};
                         }
                         switch (error.code) {
+                            case 'ENOTFOUND':
                             case 'ECONNREFUSED':
-                                reject(this.errors['port.notConnected']());
+                                reject(this.errors['port.notConnected'](error));
                                 break;
                             case 'EPIPE':
                             case 'ECONNRESET':
-                                reject(this.errors['port.disconnectBeforeResponse']());
+                                reject(this.errors['port.disconnectBeforeResponse'](error));
                                 break;
                             case 'ESOCKETTIMEDOUT':
                             case 'ETIMEDOUT':
-                                reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse']());
+                                reject(this.errors[error.connect ? 'port.notConnected' : 'port.disconnectBeforeResponse'](error));
                                 break;
                             default:
                                 reject(this.errors['portHTTP.generic'](error));
@@ -153,13 +206,13 @@ module.exports = ({utPort}) => class HttpPort extends utPort {
                     } else {
                         // prepare response
                         $meta.mtid = 'response';
-                        let correctResponse = {
+                        const correctResponse = {
                             headers: response.headers,
                             httpStatus: statusCode,
                             payload: body
                         };
                         if (statusCodeError(msg, response)) {
-                            let error = this.errors.portHTTP({
+                            const error = this.errors.portHTTP({
                                 message: (response.body && response.body.message) || 'HTTP error',
                                 statusCode,
                                 statusText,
