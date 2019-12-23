@@ -71,7 +71,17 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 },
                 method: {
                     type: 'string',
-                    enum: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
+                    enum: [
+                        'GET', 'get',
+                        'HEAD', 'head',
+                        'POST', 'post',
+                        'PUT', 'put',
+                        'DELETE', 'delete',
+                        'CONNECT', 'connect',
+                        'OPTIONS', 'options',
+                        'TRACE', 'trace',
+                        'PATCH', 'patch'
+                    ]
                 },
                 headers: {
                     type: 'object'
