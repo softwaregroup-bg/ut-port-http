@@ -1,3 +1,12 @@
+## [8.2.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.2.0...v8.2.1) (2019-12-23)
+
+
+### Bug Fixes
+
+* allow lowercase http methods ([6996212](https://github.com/softwaregroup-bg/ut-port-http/commit/6996212))
+
+
+
 # [8.2.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.1.0...v8.2.0) (2019-12-20)
 
 
