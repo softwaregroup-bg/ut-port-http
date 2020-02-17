@@ -148,13 +148,12 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
             const parseResponse = this.config.parseResponse !== false && msg.parseResponse !== false;
             const reqProps = {
                 withCredentials: msg.withCredentials || this.config.withCredentials,
-                requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000
+                requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000,
+                headers: this.config.headers,
+                followRedirect: false
             };
             if (methodName && this.openApi[methodName]) {
-                merge(reqProps, {
-                    followRedirect: false,
-                    headers: this.config.headers
-                }, this.config.raw, this.openApi[methodName](msg));
+                merge(reqProps, this.config.raw, this.openApi[methodName](msg));
             } else {
                 // check for required params
                 let url = msg.url || this.config.url;
@@ -162,11 +161,10 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 url += msg.uri || this.config.uri || '';
 
                 merge(reqProps, {
-                    followRedirect: false,
                     qs: msg.qs,
                     method: msg.httpMethod || this.config.method,
                     url: url,
-                    headers: Object.assign({}, this.config.headers, msg.headers),
+                    headers: msg.headers,
                     blob: msg.blob,
                     body: msg.payload,
                     formData: msg.formData
