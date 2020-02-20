@@ -1,3 +1,12 @@
+## [8.2.3](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.2.2...v8.2.3) (2020-02-20)
+
+
+### Bug Fixes
+
+* modify reqProps correctly before sending the request ([d2c0470](https://github.com/softwaregroup-bg/ut-port-http/commit/d2c0470f5fa76ea983ffd8b1f1e647c2279e2797))
+
+
+
 ## [8.2.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.2.1...v8.2.2) (2020-02-20)
 
 
