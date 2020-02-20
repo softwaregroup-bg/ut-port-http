@@ -1,6 +1,7 @@
 'use strict';
 const request = (process.type === 'renderer') ? require('ut-browser-request') : require('request');
 const utOpenAPI = require('ut-openapi');
+const merge = require('ut-function.merge');
 const xml2js = require('xml2js');
 const errors = require('./errors.json');
 const statusCodeError = (msg, resp) => {
@@ -39,6 +40,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
         super(...arguments);
         Object.assign(this.errors, registerErrors(errors));
     }
+
     get defaults() {
         return {
             type: 'http',
@@ -57,7 +59,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 url: {
                     oneOf: [
                         {
-                            enum: [ false ]
+                            enum: [false]
                         },
                         {
                             type: 'string',
@@ -124,12 +126,14 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
 
         return result;
     }
+
     async start() {
         this.bus.attachHandlers(this.methods, this.config.imports, this);
         const result = await super.start(...arguments);
         this.pull(this.exec);
         return result;
     }
+
     async exec(msg) {
         const $meta = (arguments.length > 1 && arguments[arguments.length - 1]);
         const methodName = $meta && $meta.method;
@@ -144,22 +148,23 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
             const parseResponse = this.config.parseResponse !== false && msg.parseResponse !== false;
             const reqProps = {
                 withCredentials: msg.withCredentials || this.config.withCredentials,
-                requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000
+                requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000,
+                headers: this.config.headers,
+                followRedirect: false
             };
             if (methodName && this.openApi[methodName]) {
-                Object.assign(reqProps, this.config.raw, this.openApi[methodName](msg));
+                merge({}, reqProps, this.config.raw, this.openApi[methodName](msg));
             } else {
                 // check for required params
                 let url = msg.url || this.config.url;
                 if (!url) return reject(this.errors['portHTTP.configPropMustBeSet']({params: {prop: 'url'}}));
                 url += msg.uri || this.config.uri || '';
 
-                Object.assign(reqProps, {
-                    followRedirect: false,
+                merge({}, reqProps, {
                     qs: msg.qs,
                     method: msg.httpMethod || this.config.method,
                     url: url,
-                    headers: Object.assign({}, this.config.headers, msg.headers),
+                    headers: msg.headers,
                     blob: msg.blob,
                     body: msg.payload,
                     formData: msg.formData
@@ -278,7 +283,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
             (typeof req.on === 'function') && req.on('request', req => {
                 let start = 0;
                 req.on('socket', socket => {
-                    start = (socket.hasOwnProperty('bytesWritten') && socket.bytesWritten) || 0;
+                    start = socket.bytesWritten || 0;
                     socket.on('data', data => {
                         this.bytesReceived && this.bytesReceived(data.length);
                     });
