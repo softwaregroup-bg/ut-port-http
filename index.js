@@ -153,14 +153,14 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 followRedirect: false
             };
             if (methodName && this.openApi[methodName]) {
-                merge(reqProps, this.config.raw, this.openApi[methodName](msg));
+                merge({}, reqProps, this.config.raw, this.openApi[methodName](msg));
             } else {
                 // check for required params
                 let url = msg.url || this.config.url;
                 if (!url) return reject(this.errors['portHTTP.configPropMustBeSet']({params: {prop: 'url'}}));
                 url += msg.uri || this.config.uri || '';
 
-                merge(reqProps, {
+                merge({}, reqProps, {
                     qs: msg.qs,
                     method: msg.httpMethod || this.config.method,
                     url: url,
