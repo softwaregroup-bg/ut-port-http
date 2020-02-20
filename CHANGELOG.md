@@ -1,3 +1,12 @@
+## [8.2.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.2.1...v8.2.2) (2020-02-20)
+
+
+### Bug Fixes
+
+* this.config.headers and this.config.raw ([#38](https://github.com/softwaregroup-bg/ut-port-http/issues/38)) ([8cc43d0](https://github.com/softwaregroup-bg/ut-port-http/commit/8cc43d0454da963bcbbabe3aa9653ae4dfcfd31e))
+
+
+
 ## [8.2.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.2.0...v8.2.1) (2019-12-23)
 
 
