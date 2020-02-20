@@ -146,21 +146,22 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
 
         return new Promise((resolve, reject) => {
             const parseResponse = this.config.parseResponse !== false && msg.parseResponse !== false;
-            const reqProps = {
+            const reqProps = {};
+            const defaults = {
                 withCredentials: msg.withCredentials || this.config.withCredentials,
                 requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000,
                 headers: this.config.headers,
                 followRedirect: false
             };
             if (methodName && this.openApi[methodName]) {
-                merge({}, reqProps, this.config.raw, this.openApi[methodName](msg));
+                merge(reqProps, defaults, this.config.raw, this.openApi[methodName](msg));
             } else {
                 // check for required params
                 let url = msg.url || this.config.url;
                 if (!url) return reject(this.errors['portHTTP.configPropMustBeSet']({params: {prop: 'url'}}));
                 url += msg.uri || this.config.uri || '';
 
-                merge({}, reqProps, {
+                merge(reqProps, defaults, {
                     qs: msg.qs,
                     method: msg.httpMethod || this.config.method,
                     url: url,
