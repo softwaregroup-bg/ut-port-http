@@ -42,6 +42,20 @@ Create http/s requests based on [`request`](https://github.com/request/request/b
 
 * `parseResponse`: to parse the response or not, defaults to `true`
 
+* `parseOptions`: to pass certain options when parsing the response (based on the content type)
+example:
+
+```json
+{
+    "parseResponse": true,
+    "parseOptions": {
+        "application/xml": {
+            "explicitArray": true
+        }
+    }
+}
+```
+
 * `requestTimeout`: in ms, time before timeout error emmit, defaults to 30 sec.
 
 * `headers`: object containing request header values.

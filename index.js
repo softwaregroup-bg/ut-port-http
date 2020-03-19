@@ -94,6 +94,9 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 parseResponse: {
                     type: 'boolean'
                 },
+                parseOptions: {
+                    type: 'object'
+                },
                 requestTimeout: {
                     type: 'number'
                 },
@@ -259,7 +262,10 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                                     reject(this.errors['portHTTP.parser.missingContentType']());
                                 } else {
                                     if (response.headers['content-type'].indexOf('/xml') !== -1 || response.headers['content-type'].indexOf('/soap+xml') !== -1) {
-                                        xml2js.parseString(body, {explicitArray: false}, function(err, result) {
+                                        xml2js.parseString(body, {
+                                            explicitArray: false,
+                                            ...this.config.parseOptions && this.config.parseOptions[response.headers['content-type']]
+                                        }, function(err, result) {
                                             if (err) {
                                                 reject(this.errors['portHTTP.parser.xmlParser'](err));
                                             } else {
