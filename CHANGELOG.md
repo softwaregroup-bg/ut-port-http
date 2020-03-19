@@ -1,3 +1,12 @@
+# [8.3.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.2.3...v8.3.0) (2020-03-19)
+
+
+### Features
+
+* pass certain parse options per content-type to be applied if parseResponse is true ([4b094b9](https://github.com/softwaregroup-bg/ut-port-http/commit/4b094b92a5582132aa014872af1fe79ce8fcec5b))
+
+
+
 ## [8.2.3](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.2.2...v8.2.3) (2020-02-20)
 
 
