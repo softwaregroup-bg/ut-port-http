@@ -50,7 +50,7 @@ example:
     "parseResponse": true,
     "parseOptions": {
         "application/xml": {
-            "explicitArray": false
+            "explicitArray": true
         }
     }
 }
