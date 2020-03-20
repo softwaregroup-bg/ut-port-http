@@ -261,10 +261,11 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                                 if (!response.headers['content-type']) {
                                     reject(this.errors['portHTTP.parser.missingContentType']());
                                 } else {
+                                    const parseOptions = msg.parseOptions || (this.config.parseOptions && this.config.parseOptions[response.headers['content-type']]);
                                     if (response.headers['content-type'].indexOf('/xml') !== -1 || response.headers['content-type'].indexOf('/soap+xml') !== -1) {
                                         xml2js.parseString(body, {
                                             explicitArray: false,
-                                            ...this.config.parseOptions && this.config.parseOptions[response.headers['content-type']]
+                                            ...parseOptions
                                         }, function(err, result) {
                                             if (err) {
                                                 reject(this.errors['portHTTP.parser.xmlParser'](err));
