@@ -154,6 +154,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 withCredentials: msg.withCredentials || this.config.withCredentials,
                 requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000,
                 headers: this.config.headers,
+                encoding: msg.encoding,
                 followRedirect: false
             };
             if (methodName && this.openApi[methodName]) {
