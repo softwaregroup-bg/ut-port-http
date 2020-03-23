@@ -1,3 +1,17 @@
+# [8.4.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.3.0...v8.4.0) (2020-03-23)
+
+
+### Bug Fixes
+
+* make possible to pass parseOption on message level ([b5f4b6a](https://github.com/softwaregroup-bg/ut-port-http/commit/b5f4b6aff991585167d3f8835f36d37d46eaeb17))
+
+
+### Features
+
+* pass encoding as an option when sending requests ([89e159c](https://github.com/softwaregroup-bg/ut-port-http/commit/89e159ce30af50badd7c2d4bd656b28655db1ccd))
+
+
+
 # [8.3.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.2.3...v8.3.0) (2020-03-19)
 
 
