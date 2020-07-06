@@ -1,3 +1,12 @@
+# [8.5.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.4.0...v8.5.0) (2020-07-06)
+
+
+### Features
+
+* support form and json passing from message ([d16a550](https://github.com/softwaregroup-bg/ut-port-http/commit/d16a550877d5efc01225cf9aeb2202505d4c0859))
+
+
+
 # [8.4.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.3.0...v8.4.0) (2020-03-23)
 
 
