@@ -165,15 +165,17 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 if (!url) return reject(this.errors['portHTTP.configPropMustBeSet']({params: {prop: 'url'}}));
                 url += msg.uri || this.config.uri || '';
 
-                merge(reqProps, defaults, {
+                merge(reqProps, this.config.raw, defaults, {
                     qs: msg.qs,
                     method: msg.httpMethod || this.config.method,
                     url: url,
                     headers: msg.headers,
                     blob: msg.blob,
                     body: msg.payload,
-                    formData: msg.formData
-                }, this.config.raw);
+                    formData: msg.formData,
+                    form: msg.form,
+                    json: msg.json
+                });
             }
 
             this.log && this.log.debug && this.log.debug(reqProps);
