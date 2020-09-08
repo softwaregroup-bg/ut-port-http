@@ -269,7 +269,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                                         xml2js.parseString(body, {
                                             explicitArray: false,
                                             ...parseOptions
-                                        }, function(err, result) {
+                                        }, (err, result) => {
                                             if (err) {
                                                 reject(this.errors['portHTTP.parser.xmlParser'](err));
                                             } else {
