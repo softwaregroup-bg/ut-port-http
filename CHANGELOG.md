@@ -1,3 +1,13 @@
+## [8.5.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.5.1...v8.5.2) (2020-09-08)
+
+
+### Bug Fixes
+
+* decode encoded xml body before parsing ([a7a9554](https://github.com/softwaregroup-bg/ut-port-http/commit/a7a955495fe36d24e86bc1362904bfa4d551ca79))
+* turn function to arrow function so that this.erros is accessible ([880f1f2](https://github.com/softwaregroup-bg/ut-port-http/commit/880f1f2f086328003e7e520b0987b691dc9cf542))
+
+
+
 ## [8.5.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.5.0...v8.5.1) (2020-07-31)
 
 
