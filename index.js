@@ -266,10 +266,11 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                                 } else {
                                     const parseOptions = msg.parseOptions || (this.config.parseOptions && this.config.parseOptions[response.headers['content-type']]);
                                     if (response.headers['content-type'].indexOf('/xml') !== -1 || response.headers['content-type'].indexOf('/soap+xml') !== -1) {
-                                        xml2js.parseString(body, {
+                                        const xml = reqProps.encoding ? Buffer.from(body, reqProps.encoding).toString('utf-8') : body;
+                                        xml2js.parseString(xml, {
                                             explicitArray: false,
                                             ...parseOptions
-                                        }, function(err, result) {
+                                        }, (err, result) => {
                                             if (err) {
                                                 reject(this.errors['portHTTP.parser.xmlParser'](err));
                                             } else {
