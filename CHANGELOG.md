@@ -1,3 +1,12 @@
+# [8.6.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.5.3...v8.6.0) (2020-10-21)
+
+
+### Features
+
+* blob handling ([#44](https://github.com/softwaregroup-bg/ut-port-http/issues/44)) ([ca4f984](https://github.com/softwaregroup-bg/ut-port-http/commit/ca4f984adb1cd4cf86f21a16b208c10acdd361b4))
+
+
+
 ## [8.5.3](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.5.2...v8.5.3) (2020-10-20)
 
 
