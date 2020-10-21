@@ -258,10 +258,15 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                         } else {
                             // process blob type response
                             if (reqProps.blob) {
-                                correctResponse.payload = {
-                                    result: (((response.getResponseHeader('Content-Disposition') || '').split('filename=') || [])[1] || '').replace(/^"|"$/g, '')
-                                };
-                                processDownload(response.body, correctResponse.payload.result);
+                                const contentDisposition = response.getResponseHeader('Content-Disposition');
+                                if (contentDisposition && contentDisposition.startWith('attachment')) {
+                                    correctResponse.payload = {
+                                        result: (((contentDisposition || '').split('filename=') || [])[1] || '').replace(/^"|"$/g, '')
+                                    };
+                                    processDownload(response.body, correctResponse.payload.result);
+                                } else {
+                                    correctResponse.payload = { result: response.body };
+                                }
                                 resolve(correctResponse);
                             }
                             // todo is this really necessarily, probably is provided by request module already
