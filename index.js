@@ -246,12 +246,6 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                             });
                             this.log && this.log.error && this.log.error(error);
                             reject(error);
-                        } if (reqProps.headers['x-wrap-in-result']) { // Wrap api response if request header is found
-                            // ut-port-jsonrpc expects response to be wrapped inside result
-                            correctResponse.payload = {
-                                result: body
-                            };
-                            resolve(correctResponse);
                         } else if (!body || body === '') { // if response is empty
                             correctResponse.payload = ((parseResponse) ? {} : body);
                             resolve(correctResponse);
