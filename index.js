@@ -22,13 +22,17 @@ const statusCodeError = (msg, resp) => {
     return false;
 };
 
-const processDownload = (blob, fileName) => {
+const processDownload = (blob, fileName, type) => {
     if (typeof window === 'object') {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.style = 'display: none';
         a.href = url;
-        a.download = fileName;
+        if (type === 'tab') {
+            a.target = '_blank';
+        } else {
+            a.download = fileName;
+        }
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
@@ -253,11 +257,11 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                             // process blob type response
                             if (reqProps.blob) {
                                 const contentDisposition = response.getResponseHeader('Content-Disposition');
-                                if (contentDisposition && contentDisposition.startWith('attachment')) {
+                                if (contentDisposition && contentDisposition.startsWith('attachment')) {
                                     correctResponse.payload = {
                                         result: (((contentDisposition || '').split('filename=') || [])[1] || '').replace(/^"|"$/g, '')
                                     };
-                                    processDownload(response.body, correctResponse.payload.result);
+                                    processDownload(response.body, correctResponse.payload.result, reqProps.blob);
                                 } else {
                                     correctResponse.payload = { result: response.body };
                                 }
