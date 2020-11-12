@@ -1,3 +1,12 @@
+## [8.6.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.6.0...v8.6.1) (2020-11-12)
+
+
+### Bug Fixes
+
+* improve attachment handling ([a1c6b44](https://github.com/softwaregroup-bg/ut-port-http/commit/a1c6b44850b2b1255a2243771c4f42e8677957d2))
+
+
+
 # [8.6.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.5.3...v8.6.0) (2020-10-21)
 
 
