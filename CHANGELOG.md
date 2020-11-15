@@ -1,3 +1,7 @@
+## [8.6.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.6.1...v8.6.2) (2020-11-15)
+
+
+
 ## [8.6.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.6.0...v8.6.1) (2020-11-12)
 
 
