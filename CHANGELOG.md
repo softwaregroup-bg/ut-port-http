@@ -1,3 +1,12 @@
+# [8.7.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.6.2...v8.7.0) (2021-03-30)
+
+
+### Features
+
+* enable namespace import ([4a6a463](https://github.com/softwaregroup-bg/ut-port-http/commit/4a6a46382c70bf212d780c9e25e1f55b805581f0))
+
+
+
 ## [8.6.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.6.1...v8.6.2) (2020-11-15)
 
 
