@@ -136,6 +136,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
 
     async start() {
         this.bus.attachHandlers(this.methods, this.config.imports, this);
+        if (this.importNamespaces) this.importNamespaces();
         const result = await super.start(...arguments);
         this.pull(this.exec);
         return result;
