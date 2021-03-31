@@ -69,6 +69,11 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                             type: 'string',
                             format: 'uri',
                             pattern: '^https?://'
+                        },
+                        {
+                            type: 'string',
+                            format: 'uri',
+                            pattern: '^file?://'
                         }
                     ]
                 },
