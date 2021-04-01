@@ -1,3 +1,12 @@
+# [8.8.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.7.0...v8.8.0) (2021-04-01)
+
+
+### Features
+
+* enable opening from file ([d29b212](https://github.com/softwaregroup-bg/ut-port-http/commit/d29b21298625571d113c4918fad4a3322fb16c0c))
+
+
+
 # [8.7.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.6.2...v8.7.0) (2021-03-30)
 
 
