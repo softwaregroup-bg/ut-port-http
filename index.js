@@ -237,7 +237,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                         }
                     } else {
                         // prepare response
-                        $meta.mtid = 'response';
+                        $meta && ($meta.mtid = 'response');
                         const correctResponse = {
                             headers: response.headers,
                             httpStatus: statusCode,
@@ -317,8 +317,25 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 });
                 req.on('response', resp => {
                     this.bytesSent && req.socket && this.bytesSent(req.socket.bytesWritten - start);
+                    this.clearTimeout();
                 });
+                req.on('error', () => {
+                    this.clearTimeout();
+                });
+                this._timeout = setTimeout(() => {
+                    req.abort();
+                    const e = new Error('ETIMEDOUT');
+                    e.code = 'ETIMEDOUT';
+                    req.emit('error', e);
+                }, reqProps.requestTimeout);
             });
         });
+    }
+
+    clearTimeout() {
+        if (this._timeout) {
+            clearTimeout(this._timeout);
+            this._timeout = null;
+        }
     }
 };
