@@ -190,7 +190,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
 
             this.log && this.log.debug && this.log.debug(reqProps);
             // do the connection + request
-            const req = request(reqProps, (error, response = {}, body = {}) => {
+            const req = request({timeout: reqProps.requestTimeout, ...reqProps}, (error, response = {}, body = {}) => {
                 try {
                     const {
                         statusCode,
