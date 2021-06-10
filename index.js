@@ -307,6 +307,21 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                     reject(this.errors.portHTTP(e));
                 }
             });
+
+            let timeout = setTimeout(() => {
+                req.abort();
+                const e = new Error('ETIMEDOUT');
+                e.code = 'ETIMEDOUT';
+                req.emit('error', e);
+            }, reqProps.requestTimeout);
+
+            const stopTimeout = () => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+            };
+
             (typeof req.on === 'function') && req.on('request', req => {
                 let start = 0;
                 req.on('socket', socket => {
@@ -317,25 +332,12 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 });
                 req.on('response', resp => {
                     this.bytesSent && req.socket && this.bytesSent(req.socket.bytesWritten - start);
-                    this.clearTimeout();
+                    stopTimeout();
                 });
                 req.on('error', () => {
-                    this.clearTimeout();
+                    stopTimeout();
                 });
-                this._timeout = setTimeout(() => {
-                    req.abort();
-                    const e = new Error('ETIMEDOUT');
-                    e.code = 'ETIMEDOUT';
-                    req.emit('error', e);
-                }, reqProps.requestTimeout);
             });
         });
-    }
-
-    clearTimeout() {
-        if (this._timeout) {
-            clearTimeout(this._timeout);
-            this._timeout = null;
-        }
     }
 };
