@@ -55,7 +55,7 @@ module.exports = function({parent}) {
         }
 
         let url = '';
-        let headers = Object.assign({}, this.config.headers, msg.headers);
+        let headers = Object.assign({}, this.config.headers, msg.headers, $meta.headers);
         let parseResponse = true;
         if (this.config.parseResponse === false) {
             parseResponse = false;
