@@ -2,9 +2,9 @@
 const request = (process.type === 'renderer') ? require('ut-browser-request') : require('request');
 const utOpenAPI = require('ut-openapi');
 const merge = require('ut-function.merge');
+const cert = require('ut-function.cert');
 const xml2js = require('xml2js');
 const errors = require('./errors.json');
-const cert = require('./cert');
 
 const statusCodeError = (msg, resp) => {
     if (resp.statusCode < 200 || resp.statusCode >= 300) {
@@ -148,11 +148,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
         this.bus.attachHandlers(this.methods, this.config.imports, this);
         if (this.importNamespaces) this.importNamespaces();
         const result = await super.start(...arguments);
-
-        if (this.config.tls) {
-            this.config.tls.resolved = cert(this.config);
-        }
-
+        if (this.config.tls) this.tls = cert(this.config);
         this.pull(this.exec);
         return result;
     }
@@ -176,7 +172,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 headers: this.config.headers,
                 encoding: msg.encoding,
                 followRedirect: false,
-                ...this.config?.tls?.resolved
+                ...this.tls
             };
             if (methodName && this.openApi[methodName]) {
                 merge(reqProps, defaults, this.config.raw, this.openApi[methodName](msg));
