@@ -4,6 +4,8 @@ const utOpenAPI = require('ut-openapi');
 const merge = require('ut-function.merge');
 const xml2js = require('xml2js');
 const errors = require('./errors.json');
+const cert = require('./cert');
+
 const statusCodeError = (msg, resp) => {
     if (resp.statusCode < 200 || resp.statusCode >= 300) {
         if (msg.allowedStatusCodes) {
@@ -114,6 +116,9 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 },
                 raw: {
                     type: 'object'
+                },
+                tls: {
+                    type: 'object'
                 }
             }
         };
@@ -143,6 +148,11 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
         this.bus.attachHandlers(this.methods, this.config.imports, this);
         if (this.importNamespaces) this.importNamespaces();
         const result = await super.start(...arguments);
+
+        if (this.config.tls) {
+            this.config.tls.resolved = cert(this.config);
+        }
+
         this.pull(this.exec);
         return result;
     }
@@ -165,7 +175,8 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                 requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000,
                 headers: this.config.headers,
                 encoding: msg.encoding,
-                followRedirect: false
+                followRedirect: false,
+                ...this.config?.tls?.resolved
             };
             if (methodName && this.openApi[methodName]) {
                 merge(reqProps, defaults, this.config.raw, this.openApi[methodName](msg));
