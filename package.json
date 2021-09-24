@@ -16,8 +16,8 @@
   },
   "devDependencies": {
     "ut-browser-request": "^1.0.2",
-    "tap": "^12.6.0",
-    "ut-tools": "^6.34.3"
+    "tap": "^15.0.10",
+    "ut-tools": "^6.39.0"
   },
   "scripts": {
     "lint": "ut-lint .",
