@@ -1,3 +1,12 @@
+# [8.9.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.8.0...v8.9.0) (2021-09-24)
+
+
+### Features
+
+* enable configuration of TLS certificates ([#46](https://github.com/softwaregroup-bg/ut-port-http/issues/46)) ([89a36d9](https://github.com/softwaregroup-bg/ut-port-http/commit/89a36d9cb604737ffb23e34a5918a42bfff09672))
+
+
+
 # [8.8.0](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.7.0...v8.8.0) (2021-04-01)
 
 
