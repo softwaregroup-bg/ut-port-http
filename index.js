@@ -100,6 +100,7 @@ HttpPort.prototype.exec = function exec(msg) {
                     var e;
                     e = errors.http(response);
                     e.code = response.statusCode;
+                    e.body = response.body;
                     reject(e);
                 } else if (!body || body === '') { // if response is empty
                     correctResponse.payload = ((parseResponse) ? {} : body);
