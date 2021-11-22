@@ -1,3 +1,7 @@
+## [8.9.2](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.1...v8.9.2) (2021-11-22)
+
+
+
 ## [8.9.1](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.0...v8.9.1) (2021-10-21)
 
 
