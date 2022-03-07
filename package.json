@@ -14,6 +14,9 @@
     "ut-function.merge": "^1.5.5",
     "xml2js": "0.4.22"
   },
+  "optionalDependencies": {
+    "ut-browser-request": "^1.0.2"
+  },
   "devDependencies": {
     "ut-browser-request": "^1.0.2",
     "tap": "^15.0.10",
