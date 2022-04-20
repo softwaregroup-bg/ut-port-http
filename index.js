@@ -41,7 +41,7 @@ const processDownload = (blob, fileName, type) => {
         a.remove();
     }
 };
-module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
+module.exports = ({utPort, utBus, registerErrors}) => class HttpPort extends utPort {
     constructor() {
         super(...arguments);
         Object.assign(this.errors, registerErrors(errors));
@@ -176,6 +176,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
             };
             if (methodName && this.openApi[methodName]) {
                 merge(reqProps, defaults, this.config.raw, this.openApi[methodName](msg));
+                if (reqProps.url.startsWith('/')) reqProps.url = utBus.info().uri + reqProps.url;
             } else {
                 // check for required params
                 let url = msg.url || this.config.url;
