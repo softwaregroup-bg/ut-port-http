@@ -1,3 +1,12 @@
+## [8.9.4](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.3...v8.9.4) (2022-10-01)
+
+
+### Bug Fixes
+
+* handle dns error ([#48](https://github.com/softwaregroup-bg/ut-port-http/issues/48)) ([936ef35](https://github.com/softwaregroup-bg/ut-port-http/commit/936ef351fbd8bdd7f075926654e36c8a41e37ab7))
+
+
+
 ## [8.9.3](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.2...v8.9.3) (2022-03-07)
 
 
