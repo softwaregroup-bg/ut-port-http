@@ -1,3 +1,12 @@
+## [8.9.5](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.4...v8.9.5) (2022-11-09)
+
+
+### Bug Fixes
+
+* record http response headers in .response #UTCORE-121 ([#49](https://github.com/softwaregroup-bg/ut-port-http/issues/49)) ([fe74ce0](https://github.com/softwaregroup-bg/ut-port-http/commit/fe74ce0fd7b36461e7dcea5a6dcc4ac285dc0c57)), closes [#UTCORE-121](https://github.com/softwaregroup-bg/ut-port-http/issues/UTCORE-121)
+
+
+
 ## [8.9.4](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.3...v8.9.4) (2022-10-01)
 
 
