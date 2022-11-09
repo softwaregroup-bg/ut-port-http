@@ -245,7 +245,12 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                         }
                     } else {
                         // prepare response
-                        $meta.mtid = 'response';
+                        merge($meta, {
+                            mtid: 'response',
+                            response: {
+                                headers: response.headers
+                            }
+                        });
                         const correctResponse = {
                             headers: response.headers,
                             httpStatus: statusCode,
