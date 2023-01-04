@@ -258,7 +258,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                         };
                         if (statusCodeError(msg, response)) {
                             const error = this.errors.portHTTP({
-                                message: (response.body && response.body.message) || 'HTTP error',
+                                params: {message: (response.body && response.body.message) || 'HTTP error'},
                                 statusCode,
                                 statusText,
                                 statusMessage,
@@ -317,7 +317,10 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                         }
                     }
                 } catch (e) {
-                    reject(this.errors.portHTTP(e));
+                    reject(this.errors.portHTTP({
+                        params: {message: e.message},
+                        cause: e
+                    }));
                 }
             });
             (typeof req.on === 'function') && req.on('request', req => {
