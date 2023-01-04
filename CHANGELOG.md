@@ -1,3 +1,12 @@
+## [8.9.6](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.5...v8.9.6) (2023-01-04)
+
+
+### Bug Fixes
+
+* improve error messages #CBI-641 ([cc8f806](https://github.com/softwaregroup-bg/ut-port-http/commit/cc8f806818fea5686c08f03b9988d98b55852641)), closes [#CBI-641](https://github.com/softwaregroup-bg/ut-port-http/issues/CBI-641)
+
+
+
 ## [8.9.5](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.4...v8.9.5) (2022-11-09)
 
 
