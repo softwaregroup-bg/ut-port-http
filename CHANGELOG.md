@@ -1,3 +1,12 @@
+## [8.9.7](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.6...v8.9.7) (2023-01-19)
+
+
+### Bug Fixes
+
+* pass timeout properly ([85c2e9e](https://github.com/softwaregroup-bg/ut-port-http/commit/85c2e9e9205d9abacb76c1b2c4b430532596c0b6))
+
+
+
 ## [8.9.6](https://github.com/softwaregroup-bg/ut-port-http/compare/v8.9.5...v8.9.6) (2023-01-04)
 
 
