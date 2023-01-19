@@ -168,7 +168,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
             const reqProps = {};
             const defaults = {
                 withCredentials: msg.withCredentials || this.config.withCredentials,
-                requestTimeout: msg.requestTimeout || this.config.requestTimeout || 30000,
+                timeout: msg.requestTimeout || this.config.requestTimeout || 30000,
                 headers: this.config.headers,
                 encoding: msg.encoding,
                 followRedirect: false,
