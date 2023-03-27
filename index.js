@@ -229,6 +229,7 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                         switch (error.code) {
                             case 'ENOTFOUND':
                             case 'ECONNREFUSED':
+                            case 'EHOSTUNREACH':
                             case 'EAI_AGAIN':
                                 reject(this.errors['port.notConnected'](error));
                                 break;
