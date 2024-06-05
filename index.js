@@ -251,8 +251,8 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                                                 .split('\r\n')
                                                 .filter(Boolean)
                                                 .reduce((prev, next) => {
-                                                    const [k, v] = next.split(':');
-                                                    prev[k.trim()] = v.trim();
+                                                    const [k, v] = next.split(': ');
+                                                    prev[k] = v;
                                                     return prev;
                                                 }, {});
                         }
