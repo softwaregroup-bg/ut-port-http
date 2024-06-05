@@ -245,6 +245,17 @@ module.exports = ({utPort, registerErrors}) => class HttpPort extends utPort {
                                 reject(this.errors['portHTTP.generic'](error));
                         }
                     } else {
+                        if (!response.headers && response.getAllResponseHeaders) {
+                            response.headers = response
+                                                .getAllResponseHeaders()
+                                                .split('\r\n')
+                                                .filter(Boolean)
+                                                .reduce((prev, next) => {
+                                                    const [k, v] = next.split(':');
+                                                    prev[k.trim()] = v.trim();
+                                                    return prev;
+                                                }, {});
+                        }
                         // prepare response
                         merge($meta, {
                             mtid: 'response',
